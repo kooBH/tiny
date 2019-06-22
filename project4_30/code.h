@@ -31,6 +31,10 @@
 
 /* code emitting utilities */
 
+/* just write some codes
+ * */
+void emitCode(char* c);
+
 /* Procedure emitComment prints a comment line 
  * with comment c in the code file
  */
@@ -63,7 +67,7 @@ void emitRM( char * op, int r, int d, int s, char *c);
 int emitSkip( int howMany);
 
 /* Procedure emitBackup backs up to 
- * loc = a previously skipped location
+ *  = a previously skipped location
  */
 void emitBackup( int loc);
 
