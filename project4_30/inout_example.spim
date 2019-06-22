@@ -1,0 +1,58 @@
+    .data
+test_text:
+    .asciiz "\nTest\n"
+
+    .text
+main:
+    jal __main
+    li      $v0, 10
+    syscall #Term
+
+output:
+    sub     $sp, $sp, 8
+    sw      $fp, 4($sp)
+    sw      $ra, 0($sp)
+    move    $fp, $sp
+
+    lw      $a0, 8($sp)
+    li      $v0, 1
+    syscall
+
+    lw      $ra, 0($sp)
+    lw      $fp, 4($sp)
+    addi    $sp, $sp, 8
+    jr      $ra
+ 
+input:
+    sub     $sp, $sp, 8
+    sw      $fp, 4($sp)
+    sw      $ra, 0($sp)
+    move    $fp, $sp
+
+    li      $v0, 1
+    syscall
+
+    lw      $ra, 0($sp)
+    lw      $fp, 4($sp)
+    addi    $sp, $sp, 8
+    jr      $ra
+
+__main:
+    sub     $sp, $sp, 8
+    sw      $fp, 4($sp)
+    sw      $ra, 0($sp)
+    move    $fp, $sp
+
+#    li      $v0, 4
+#    la      $a0, test_text
+#    syscall
+    sub     $sp, $sp, 4
+    li      $t0, 10
+    sw      $t0, 0($sp)
+    jal     output
+    addi    $sp, $sp, 4
+
+    lw      $ra, 0($sp)
+    lw      $fp, 4($sp)
+    addi    $sp, $sp, 8
+    jr      $ra
