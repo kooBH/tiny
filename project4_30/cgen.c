@@ -44,7 +44,41 @@ static void genDecl( TreeNode * tree){
         isGlobalVarsDone=TRUE;
         emitString(".text\n");
         emitLabel("main");
-        emitCode("j __main");
+        emitCode("jal __main");
+        emitCode("li $v0, 10");
+        emitCode("syscall");
+        emitString("\n");
+
+        emitComment("Code for void output(int) function");
+        emitLabel("output");
+        emitCode("sub     $sp, $sp, 8");
+        emitCode("sw      $fp, 4($sp)");
+        emitCode("sw      $ra, 0($sp)");
+        emitCode("move    $fp, $sp");
+        emitString("\n");
+        emitCode("lw      $a0, 8($sp)");
+        emitCode("li      $v0, 1");
+        emitCode("syscall");
+        emitString("\n");
+        emitCode("lw      $ra, 0($sp)");
+        emitCode("lw      $fp, 4($sp)");
+        emitCode("addi    $sp, $sp, 8");
+        emitCode("jr      $ra");
+
+        emitComment("Code for int input(void) function");
+        emitLabel("input");
+        emitCode("sub     $sp, $sp, 8");
+        emitCode("sw      $fp, 4($sp)");
+        emitCode("sw      $ra, 0($sp)");
+        emitCode("move    $fp, $sp");
+        emitString("\n");
+        emitCode("li      $v0, 1");
+        emitCode("syscall");
+        emitString("\n");
+        emitCode("lw      $ra, 0($sp)");
+        emitCode("lw      $fp, 4($sp)");
+        emitCode("addi    $sp, $sp, 8");
+        emitCode("jr      $ra");
       }
       /* main 함수 부분 라벨 예외*/
       if(!strcmp(tree->attr.name,"main")){
@@ -58,7 +92,7 @@ static void genDecl( TreeNode * tree){
       //p1 = tree->child[2];
       //cGen(p1);
 
-         emitComment("FuncK");
+     emitComment("FuncK");
 
       break;
     case VarK:
@@ -70,7 +104,7 @@ static void genDecl( TreeNode * tree){
       }
       // local variables
       else{
-        emitCode("addi $sp,$sp,-4");
+        emitCode("sub $sp,$sp,4");
       }
 
       break;
@@ -328,6 +362,8 @@ static void cGen( TreeNode * tree)
                     emitCode("jr $ra");
                   }
                 break;
+              default:
+                break;
             }
           break;
           case StmtK:
@@ -336,8 +372,12 @@ static void cGen( TreeNode * tree)
                   // Compound 끝에 stack관리
                   emitComment("stack manage");
                   break;
+              default:
+                break;
               }
           break;
+      default:
+        break;
       }
     }
     cGen(tree->sibling);
@@ -361,6 +401,7 @@ void codeGen(TreeNode * syntaxTree, char * codefile)
 {  char * s = malloc(strlen(codefile)+7);
    strcpy(s,"File: ");
    strcat(s,codefile);
+   emitComment(s);
    emitComment("C-");
    emitString(".data\n");
    emitComment("Area for global Variables");
@@ -374,9 +415,7 @@ void codeGen(TreeNode * syntaxTree, char * codefile)
    printf("cGen(SyntaxTree) Finished\n");
 #endif
    /* finish */
-   emitComment("End of execution.");
-   emitCode("li $v0, 10");
-   emitCode("syscall");
+   emitComment("End of code.");
 //   emitRO("HALT",0,0,0,"");
 #if DEBUG
    printf("CODEGEN\n");
