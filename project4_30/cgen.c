@@ -21,11 +21,24 @@ static int tmpOffset = 0;
 /* prototype for internal recursive code generator */
 static void cGen (TreeNode * tree);
 
+
+/* Procedure genStmt generates code at a statement node */
+static void genDecl( TreeNode * tree){
+#if DEBUG
+  printf("genDecl\n");
+#endif
+}
+/*genDecl*/
+
 /* Procedure genStmt generates code at a statement node */
 static void genStmt( TreeNode * tree)
 { TreeNode * p1, * p2, * p3;
   int savedLoc1,savedLoc2,currentLoc;
   int loc;
+
+#if DEBUG
+  printf("genStmt\n");
+#endif
   switch (tree->kind.stmt) {
 
       case IfK :
@@ -68,9 +81,17 @@ static void genStmt( TreeNode * tree)
 //         if (TraceCode)  emitComment("<- repeat") ;
 //         break; /* repeat */
 //
-      case AssignK:
+      case CompK:
+          break;
+      case 111:   
          if (TraceCode) emitComment("-> assign") ;
          /* generate code for rhs */
+
+         // void argument
+         //if(!strcmp(tree->attr.name,"(null)")) break;
+#if DEBUG
+         printf("CompK %s\n",tree->attr.name);
+#endif
          cGen(tree->child[0]);
          /* now store value */
          loc = st_lookup(tree->attr.name);
@@ -95,12 +116,28 @@ static void genStmt( TreeNode * tree)
 } /* genStmt */
 
 /* Procedure genExp generates code at an expression node */
+static void genParam( TreeNode * tree){
+#if DEBUG
+  printf("genParam\n");
+#endif
+
+}/* genParam*/
+
+
+/* Procedure genExp generates code at an expression node */
 static void genExp( TreeNode * tree)
-{ int loc;
+{
+#if DEBUG
+  printf("genExp\n");
+#endif
+  int loc;
   TreeNode * p1, * p2;
   switch (tree->kind.exp) {
 
     case ConstK :
+#if DEBUG
+      printf("genExp ConstK\n");
+#endif
       if (TraceCode) emitComment("-> Const") ;
       /* gen code to load integer constant using LDC */
       emitRM("LDC",ac,tree->attr.val,0,"load const");
@@ -165,23 +202,45 @@ static void genExp( TreeNode * tree)
   }
 } /* genExp */
 
+
+
 /* Procedure cGen recursively generates code by
  * tree traversal
  */
 static void cGen( TreeNode * tree)
-{ if (tree != NULL)
-  { switch (tree->nodekind) {
+{ 
+
+  int i=0;
+  if (tree != NULL)
+  {
+#if DEBUG
+  printf("cGen lineno %d\n",tree->lineno);
+#endif
+    switch (tree->nodekind) {
       case StmtK:
         genStmt(tree);
         break;
       case ExpK:
         genExp(tree);
         break;
+      case ParamK:
+        genParam(tree);
+        break;
+      case DeclK:
+        genDecl(tree);
+        break;
       default:
         break;
     }
+    for( i=0; i<MAXCHILDREN;i++){
+      cGen(tree->child[i]);
+    }
     cGen(tree->sibling);
   }
+#if DEBUG
+  if(tree!=NULL)
+  printf("cGen lineno %d finished\n",tree->lineno);
+#endif
 }
 
 /**********************************************/
@@ -206,6 +265,9 @@ void codeGen(TreeNode * syntaxTree, char * codefile)
    emitComment("End of standard prelude.");
    /* generate code for TINY program */
    cGen(syntaxTree);
+#if DEBUG
+   printf("cGen(SyntaxTree) Finished\n");
+#endif
    /* finish */
    emitComment("End of execution.");
    emitRO("HALT",0,0,0,"");
