@@ -193,14 +193,19 @@ static void genParam( TreeNode * tree){
 /* Procedure genExp generates code at an expression node */
 static void genExp( TreeNode * tree)
 {
+#if DEBUG
+    printf("genExp\n");
+#endif
     int loc;
    TreeNode *p1, *p2;
     switch (tree->kind.exp)
     {
         case ConstK :
+
 #if DEBUG
             printf("genExp ConstK\n");
 #endif
+
             if (TraceCode) emitComment("-> Const") ;
             /* gen code to load integer constant using LDC */
             if (TraceCode)  emitComment("<- Const") ;
@@ -263,6 +268,7 @@ static void cGen( TreeNode * tree)
 #if DEBUG
         printf("cGen lineno %d\n",tree->lineno);
 #endif
+        tree->visited = 1;
         switch (tree->nodekind) {
             case StmtK:
                 genStmt(tree);
