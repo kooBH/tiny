@@ -17,6 +17,30 @@ static int emitLoc = 0 ;
    emitBackup, and emitRestore */
 static int highEmitLoc = 0;
 
+
+void emitLa(char* Rdest, int loc){
+    fprintf(code,"L%-3d: la %s, %d($fp)\n",emitLoc,Rdest,loc);
+    emitLoc++;
+}
+void emitMove(char*Rdest, char*Rsrc){
+    fprintf(code,"L%-3d: move %s, %s\n",emitLoc,Rdest,Rsrc);
+    emitLoc++;
+}
+
+void emitLi(char*Rdest,int v){
+    if (TraceCode) fprintf(code,"L%-3d: li      %s, %-3d\n",emitLoc,Rdest,v);
+    emitLoc++;
+}
+
+void emitLw(char* Rdest, int offset){
+    if (TraceCode) fprintf(code,"L%-3d: lw      %s, %3d($fp)\n",emitLoc,Rdest,offset);
+    emitLoc++;
+}
+void emitSw(char* Rsrc, int offset){
+    if (TraceCode) fprintf(code,"L%-3d: sw      %s, %3d($fp)\n",emitLoc,Rsrc,offset);
+    emitLoc++;
+}
+
 void emitJump2JumpLabel(int c){
     if (TraceCode) fprintf(code,"L%-3d: j J%-3d\n",emitLoc,c);
     emitLoc++;
@@ -41,7 +65,7 @@ void emitStackPop(int offset){
     emitLoc++;
 }
 void emitStackPush(int offset){
-    if (TraceCode) fprintf(code,"L%-3d: sub $sp, $sp, %d\n",emitLoc,offset);
+    if (TraceCode) fprintf(code,"L%-3d: addi $sp, $sp, -%d\n",emitLoc,offset);
     emitLoc++;
 }
 
@@ -83,7 +107,7 @@ void emitPush(char* reg)
 {
     char* c = (char *)malloc(strlen(reg) + 17);
     emitCode("sub     $sp, $sp, 4");
-    strcpy( c, "sw      " );
+    strcat( c, "sw      " );
     strcat( c, reg );
     strcat( c, ", 0($sp)" );
     emitCode( c );
@@ -93,7 +117,7 @@ void emitPush(char* reg)
 void emitPop(char* reg)
 {
     char* c = (char *)malloc(strlen(reg) + 17);
-    strcpy( c, "lw      " );
+    strcat( c, "lw      " );
     strcat( c, reg );
     strcat( c, ", 0($sp)" );
     emitCode( c );
@@ -124,9 +148,11 @@ void emitFuncEnd(TreeNode* tree)
     emitCode("lw      $fp, 8($sp)");
     emitCode("sub     $sp, $sp, 8");
     emitCode("jr      $ra");
+    
+#if DEBUG
+    emitComment("End of FuncK");
+#endif
     emitString("\n");
-
-    if (TraceCode) emitComment("End of FuncK");
 }
 
 void emitCall(TreeNode* tree)
