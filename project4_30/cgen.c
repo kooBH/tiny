@@ -175,7 +175,7 @@ static void genStmt( TreeNode * tree)
 //         break; /* repeat */
 //
       case CompK:
-         emitComment("CompK");
+         emitComment("CompK entry");
          //p1 = tree->child[0] ;
          //p2 = tree->child[1] ;
         // emitComment("Compound Statment : var_decl");
@@ -230,6 +230,7 @@ static void genParam( TreeNode * tree){
 #if DEBUG
   printf("genParam\n");
 #endif
+  emitComment("paramK");
 
 }/* genParam*/
 
@@ -307,9 +308,12 @@ static void genExp( TreeNode * tree)
          if (TraceCode)  emitComment("<- Op") ;
          break; /* OpK */
     case CallK:
-      
-
+#if DEBUG
+         printf("ExpK CallK %s\n",tree->attr.name);
+#endif
          emitComment("CallK");
+         emitJal(tree->attr.name);
+         
       break;   
 
     default:
@@ -370,7 +374,8 @@ static void cGen( TreeNode * tree)
               switch(tree->kind.stmt){
                 case CompK:
                   // Compound 끝에 stack관리
-                  emitComment("stack manage");
+                  emitCode("move $sp,$s0");
+                  emitComment("end of CompK : stack manage");
                   break;
               default:
                 break;
