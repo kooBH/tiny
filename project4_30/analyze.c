@@ -226,6 +226,7 @@ static void checkINTreturn( TreeNode* t )
 //여기서 해시테이블의 요소에 노드 정보를 같이 받아야함.
 static void insertNode( TreeNode* t )
 {
+  int loc;
     switch ( t->nodekind )
     {
         case StmtK:
@@ -252,17 +253,23 @@ static void insertNode( TreeNode* t )
             switch ( t->kind.exp )
             {
                 case IdK:
-                    if ( st_lookup( t->attr.name ) == -1 )
+                    loc = st_lookup( t->attr.name );
+                    if (  loc== -1 )
                         error_undecl( t, t->lineno );
-                    else
-                        st_insert( t->attr.name, t->lineno, 0, t );
+                    else{
+                        st_insert( t->attr.name, t->lineno, loc, t );
+                        t->location = loc;
+                    }
                     break;
                 // Array는 별도의 id kind를 지님.
                 case ArrIdK:
-                    if ( st_lookup( t->attr.arr.name ) == -1 )
+                    loc =  st_lookup( t->attr.arr.name );
+                    if (  loc== -1 )
                         error_undecl( t, t->lineno );
-                    else
-                        st_insert( t->attr.arr.name, t->lineno, 0, t );
+                    else{
+                      t->location = loc;
+                        st_insert( t->attr.arr.name, t->lineno, loc, t );
+                    }
                     break;
                 case CallK:
                     if ( st_lookup( t->attr.name ) == -1 )
