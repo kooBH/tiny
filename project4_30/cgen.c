@@ -186,6 +186,9 @@ static void genParam( TreeNode * tree){
 /* Procedure genExp generates code at an expression node */
 static void genExp( TreeNode * tree)
 {
+#if DEBUG
+    printf("genExp\n");
+#endif
     int loc;
    TreeNode *p1, *p2;
     switch (tree->kind.exp)

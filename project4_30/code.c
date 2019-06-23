@@ -60,7 +60,6 @@ void emitIfTrue(int c){
     emitLoc++;
 }
 
-
 void emitStackPop(int offset){
     if (TraceCode) fprintf(code,"L%-3d: addi $sp, $sp, %d\n",emitLoc,offset);
     emitLoc++;
@@ -78,18 +77,20 @@ void emitString(char* c)
 void emitJal(char*c)
 {
     if (TraceCode) fprintf(code,"%3d: jal %s\n",emitLoc,c);
+    else fprintf(code,"    jal %s\n",c);
     emitLoc++;
 }
 
 void emitLabel(char* c)
 {
-    if (TraceCode) fprintf(code,"%s:\n",c);
+    fprintf(code,"%s:\n",c);
 }
 
 /* just write some codes*/
 void emitCode(char* c)
 {
-    if (TraceCode) fprintf(code,"L%-3d: %s\n",emitLoc,c);
+    if ( TraceCode ) fprintf(code,"L%-3d: %s\n",emitLoc,c);
+    else fprintf(code,"    %s\n",c);
     ++emitLoc ;
 }
 
@@ -126,23 +127,23 @@ void emitPop(char* reg)
 
 void emitFuncStart()
 {
-#if DEBUG
-    emitComment("Start of FuncK");
-#endif
+    if (TraceCode) emitComment("Start of FuncK");
+
+    emitString("\n");
     emitCode("sub     $sp, $sp, 8");
     emitCode("sw      $fp, 4($sp)");
     emitCode("sw      $ra, 0($sp)");
     emitCode("sub     $fp, $sp, 4");
-#if DEBUG
-    emitComment("FuncK body start here");
-#endif
+    emitString("\n");
+
+    if (TraceCode) emitComment("FuncK body start here");
 }
 
 void emitFuncEnd()
 {
-#if DEBUG
-    emitComment("FuncK body end here");
-#endif
+    if (TraceCode) emitComment("FuncK body end here");
+
+    emitString("\n");
     emitCode("lw      $ra, 0($sp)");
     emitCode("lw      $fp, 4($sp)");
     emitCode("addi    $sp, $sp, 4");
@@ -151,6 +152,7 @@ void emitFuncEnd()
 #if DEBUG
     emitComment("End of FuncK");
 #endif
+    emitString("\n");
 }
 
 void emitCall(char* label)
@@ -159,9 +161,11 @@ void emitCall(char* label)
     emitCode("sub     $sp, $sp, 4");
     emitCode("sw      $a0, 0($sp)");
     emitJAL(label);
+    emitString("\n");
     emitComment("Function return here");
     emitCode("addi    $sp, $sp, 4");
     emitComment("End of CallK");
+    emitString("\n");
 }
 
 /* Procedure emitComment prints a comment line 
