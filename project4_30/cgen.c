@@ -42,66 +42,40 @@ static void genDecl( TreeNode * tree)
             printf("Decl FuncK %s\n",tree->attr.name);
 #endif
             /* global vars 선언에서 바로 main 으로*/
-            if(!isGlobalVarsDone){
+            if(!isGlobalVarsDone)
+            {
                 isGlobalVarsDone=TRUE;
-                emitString("    .text\n");
-                emitLabel("main");
-                emitCode("jal     __main");
-                emitCode("li      $v0, 10");
-                emitCode("syscall");
-                emitString("\n");
-
-                emitComment("Code for void output(int) function");
-                emitLabel("output");
-                emitCode("sub     $sp, $sp, 8");
-                emitCode("sw      $fp, 4($sp)");
-                emitCode("sw      $ra, 0($sp)");
-                emitCode("move    $fp, $sp");
-                emitString("\n");
-                emitCode("li      $v0, 1");
-                emitCode("syscall");
-                emitString("\n");
-                emitCode("lw      $ra, 0($sp)");
-                emitCode("lw      $fp, 4($sp)");
-                emitCode("addi    $sp, $sp, 8");
-                emitCode("jr      $ra");
-
-                emitComment("Code for int input(void) function");
-                emitLabel("input");
-                emitCode("sub     $sp, $sp, 8");
-                emitCode("sw      $fp, 4($sp)");
-                emitCode("sw      $ra, 0($sp)");
-                emitCode("move    $fp, $sp");
-                emitString("\n");
-                emitCode("li      $v0, 5");
-                emitCode("syscall");
-                emitString("\n");
-                emitCode("lw      $ra, 0($sp)");
-                emitCode("lw      $fp, 4($sp)");
-                emitCode("addi    $sp, $sp, 8");
-                emitCode("jr      $ra");
+                emitStartup();
             }
             /* main 함수 부분 라벨 예외*/
-            if(!strcmp(tree->attr.name,"main")){
+            if(!strcmp(tree->attr.name,"main"))
+            {
                 emitLabel("__main");
 
-            }else{
+            }
+            else
+            {
                 emitLabel(tree->attr.name);
             }
+
             /* body of func */
             //p1 = tree->child[2];
             //cGen(p1);
+            
             emitFuncStart();
+            
             break;
         case VarK:
 #if DEBUG
             printf("Decl VarK %s\n",tree->attr.name);
 #endif
-            if(!isGlobalVarsDone){
+            if(!isGlobalVarsDone)
+            {
                 // 생각해보니 할 것이 없다.
             }
             // local variables
-            else{
+            else
+            {
                 emitCode("sub $sp,$sp,4");
             }
 
@@ -122,56 +96,13 @@ static void genStmt( TreeNode * tree)
 #if DEBUG
     printf("genStmt\n");
 #endif
-    switch (tree->kind.stmt) {
-        case IfK :
+    switch (tree->kind.stmt)
+    {
+        case IfK:
 #if DEBUG
             printf("IfK lineno %d\n",tree->lineno);
 #endif
-            if (TraceCode) emitComment("-> if") ;
-            p1 = tree->child[0] ;
-            p2 = tree->child[1] ;
-            p3 = tree->child[2] ;
-            /* generate code for test expression */
-            cGen(p1);
-            savedLoc1 = emitSkip(1) ;
-
-            printf("savedLoc1 : %d\n",savedLoc1);
-
-            emitComment("if: jump to else belongs here");
-            /* recurse on then part */
-            cGen(p2);
-            savedLoc2 = emitSkip(1) ;
-
-            printf("savedLoc2 : %d\n",savedLoc2);
-
-            emitComment("if: jump to end belongs here");
-            currentLoc = emitSkip(0) ;
-            emitBackup(savedLoc1) ;
-            emitRM_Abs("JEQ",ac,currentLoc,"if: jmp to else");
-            emitRestore() ;
-            /* recurse on else part */
-            if(p3 != NULL){
-                cGen(p3);
-                currentLoc = emitSkip(0) ;
-                emitBackup(savedLoc2) ;
-                emitRM_Abs("LDA",pc,currentLoc,"jmp to end") ;
-                emitRestore() ;
-            }
-            if (TraceCode)  emitComment("<- if") ;
-            //      case RepeatK:
-            //         if (TraceCode) emitComment("-> repeat") ;
-            //         p1 = tree->child[0] ;
-            //         p2 = tree->child[1] ;
-            //         savedLoc1 = emitSkip(0);
-            //         emitComment("repeat: jump after body comes back here");
-            //         /* generate code for body */
-            //         cGen(p1);
-            //         /* generate code for test */
-            //         cGen(p2);
-            //         emitRM_Abs("JEQ",ac,savedLoc1,"repeat: jmp back to body");
-            //         if (TraceCode)  emitComment("<- repeat") ;
-            //         break; /* repeat */
-            //
+            break;
         case CompK:
             emitComment("CompK entry");
             //p1 = tree->child[0] ;
@@ -180,7 +111,6 @@ static void genStmt( TreeNode * tree)
             //cGen(p1);
             // emitComment("Compound Statment : stmt_list");
             // cGen(p2);
-
             break;
         case IterK:
             break;
@@ -189,35 +119,6 @@ static void genStmt( TreeNode * tree)
             break;
         case ElseK:
             break;
-
-
-        case 111:   
-            if (TraceCode) emitComment("-> assign") ;
-            /* generate code for rhs */
-
-            // void argument
-            //if(!strcmp(tree->attr.name,"(null)")) break;
-#if DEBUG
-            printf("CompK %s\n",tree->attr.name);
-#endif
-            cGen(tree->child[0]);
-            /* now store value */
-            loc = st_lookup(tree->attr.name);
-            emitRM("ST",ac,loc,gp,"assign: store value");
-            if (TraceCode)  emitComment("<- assign") ;
-            break; /* assign_k */
-
-            //      case ReadK:
-            //         emitRO("IN",ac,0,0,"read integer value");
-            //         loc = st_lookup(tree->attr.name);
-            //         emitRM("ST",ac,loc,gp,"read: store value");
-            //         break;
-            //      case WriteK:
-            //         /* generate code for expression to write */
-            //         cGen(tree->child[0]);
-            //         /* now output it */
-            //         emitRO("OUT",ac,0,0,"write ac");
-            //         break;
         default:
             break;
     }
@@ -229,7 +130,6 @@ static void genParam( TreeNode * tree){
     printf("genParam\n");
 #endif
     emitComment("paramK");
-
 }/* genParam*/
 
 
@@ -240,23 +140,22 @@ static void genExp( TreeNode * tree)
     printf("genExp\n");
 #endif
     int loc;
-    TreeNode * p1, * p2;
-    switch (tree->kind.exp) {
-
+    TreeNode *p1, *p2;
+    switch (tree->kind.exp)
+    {
         case ConstK :
 #if DEBUG
             printf("genExp ConstK\n");
 #endif
             if (TraceCode) emitComment("-> Const") ;
             /* gen code to load integer constant using LDC */
-            emitRM("LDC",ac,tree->attr.val,0,"load const");
             if (TraceCode)  emitComment("<- Const") ;
             break; /* ConstK */
 
         case IdK :
             if (TraceCode) emitComment("-> Id") ;
-            loc = st_lookup(tree->attr.name);
-            emitRM("LD",ac,loc,gp,"load id value");
+            // loc = st_lookup(tree->attr.name);
+            // emitRM("LD",ac,loc,gp,"load id value");
             if (TraceCode)  emitComment("<- Id") ;
             break; /* IdK */
 
@@ -264,41 +163,7 @@ static void genExp( TreeNode * tree)
             if (TraceCode) emitComment("-> Op") ;
             p1 = tree->child[0];
             p2 = tree->child[1];
-            /* gen code for ac = left arg */
-            cGen(p1);
-            /* gen code to push left operand */
-            emitRM("ST",ac,tmpOffset--,mp,"op: push left");
-            /* gen code for ac = right operand */
-            cGen(p2);
-            /* now load left operand */
-            emitRM("LD",ac1,++tmpOffset,mp,"op: load left");
             switch (tree->attr.op) {
-                case PLUS :
-                    emitRO("ADD",ac,ac1,ac,"op +");
-                    break;
-                case MINUS :
-                    emitRO("SUB",ac,ac1,ac,"op -");
-                    break;
-                case TIMES :
-                    emitRO("MUL",ac,ac1,ac,"op *");
-                    break;
-                case OVER :
-                    emitRO("DIV",ac,ac1,ac,"op /");
-                    break;
-                case LT :
-                    emitRO("SUB",ac,ac1,ac,"op <") ;
-                    emitRM("JLT",ac,2,pc,"br if true") ;
-                    emitRM("LDC",ac,0,ac,"false case") ;
-                    emitRM("LDA",pc,1,pc,"unconditional jmp") ;
-                    emitRM("LDC",ac,1,ac,"true case") ;
-                    break;
-                case EQ :
-                    emitRO("SUB",ac,ac1,ac,"op ==") ;
-                    emitRM("JEQ",ac,2,pc,"br if true");
-                    emitRM("LDC",ac,0,ac,"false case") ;
-                    emitRM("LDA",pc,1,pc,"unconditional jmp") ;
-                    emitRM("LDC",ac,1,ac,"true case") ;
-                    break;
                 default:
                     emitComment("BUG: Unknown operator");
                     break;
@@ -312,12 +177,19 @@ static void genExp( TreeNode * tree)
             emitCall(tree->attr.name);
             break;   
 
+        case AssignK:
+            if (TraceCode) emitComment("-> assign") ;
+            /* generate code for rhs */
+#if DEBUG
+            printf("CompK %s\n",tree->attr.name);
+#endif
+            if (TraceCode)  emitComment("<- assign") ;
+            break; /* assign_k */
+
         default:
             break;
     }
 } /* genExp */
-
-
 
 /* Procedure cGen recursively generates code by
  * tree traversal
@@ -420,26 +292,27 @@ static void cGen( TreeNode * tree)
  * file name as a comment in the code file
  */
 void codeGen(TreeNode * syntaxTree, char * codefile)
-{  char * s = malloc(strlen(codefile)+7);
-    strcpy(s,"File: ");
+{
+    char * s = malloc(strlen(codefile)+7);
+
+    strcpy(s,"File : ");
     strcat(s,codefile);
+
     emitComment(s);
-    emitComment("C-");
-    emitString(".data\n");
+    emitComment("Language : C-");
+    emitString("    .data\n");
     emitComment("Area for global Variables");
-    /* generate standard prelude */
-    //  emitRM("LD",mp,0,ac,"load maxaddress from location 0");
-    //   emitRM("ST",ac,0,ac,"clear location 0");
-    //   emitComment("End of standard prelude.");
-    /* generate code for TINY program */
+    emitString("\n");
+    emitComment("End of area for global Variables");
+    emitString("\n");
     cGen(syntaxTree);
 #if DEBUG
     printf("cGen(SyntaxTree) Finished\n");
 #endif
-    /* finish */
+    emitString("\n");
     emitComment("End of code.");
-    //   emitRO("HALT",0,0,0,"");
+    emitString("\n");
 #if DEBUG
-    printf("CODEGEN\n");
+    printf("\nCODEGEN\n");
 #endif
 }
