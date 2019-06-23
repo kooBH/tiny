@@ -231,8 +231,8 @@ static void genExp( TreeNode * tree)
             cGen(p1);
             p1->visited=TRUE;
             p2->visited=TRUE;
-            emitPop("$t1");
             emitPop("$t0");
+            emitPop("$t1");
            switch (tree->attr.op) {
                 case PLUS:
                   emitCode("add $t2, $t0, $t1 ");
@@ -369,7 +369,6 @@ static void cGen( TreeNode * tree)
             default:
                 break;
         }
-        tree->visited = TRUE;
         for( i=0; i<MAXCHILDREN;i++){
             cGen(tree->child[i]);
             if(tree->child[i]==NULL)
