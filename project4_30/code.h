@@ -35,7 +35,11 @@ void emitCode(char* c);
 
 void emitJAL(char* label);
 
+void emitPush(char* reg);
+void emitPop(char* reg);
+
 void emitStackPop(int offset);
+void emitStackPush(int offset);
 
 void emitFuncStart();
 void emitFuncEnd();

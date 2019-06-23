@@ -25,13 +25,12 @@ static int tmpOffset = 0;
 /* prototype for internal recursive code generator */
 static void cGen (TreeNode * tree);
 
-
 /* Procedure genStmt generates code at a statement node */
 static void genDecl( TreeNode * tree)
 {
     TreeNode * p1, * p2, * p3;
     int savedLoc1,savedLoc2,currentLoc;
-    int loc;
+    int offset;
 #if DEBUG
     printf("genDecl\n");
 #endif
@@ -51,7 +50,6 @@ static void genDecl( TreeNode * tree)
             if(!strcmp(tree->attr.name,"main"))
             {
                 emitLabel("__main");
-
             }
             else
             {
@@ -71,7 +69,6 @@ static void genDecl( TreeNode * tree)
 #endif
             if(!isGlobalVarsDone)
             {
-                // 생각해보니 할 것이 없다.
             }
             // local variables
             else
@@ -81,6 +78,16 @@ static void genDecl( TreeNode * tree)
 
             break;
         case ArrVarK:
+            if(!isGlobalVarsDone)
+            {
+
+            }
+            // local variables
+            else
+            {
+                offset = tree->attr.arr.size*4;
+                emitStackPush(offset);
+            }
             break;
     }
 }
@@ -110,8 +117,7 @@ static void genStmt( TreeNode * tree)
             emitComment("IfK if");
             cGen(p1);
             //savedLoc1 = emitSkip(1) ;
-
-
+            emitPop("t0");
             emitIfFalse(jumpCnt);
             savedLoc1 = jumpCnt;
             jumpCnt++;
@@ -156,7 +162,7 @@ static void genStmt( TreeNode * tree)
             jumpCnt++;
             /* While(p1) */
             cGen(p1);
-
+            emitPop("t0");
             emitIfTrue(jumpCnt);
             savedLoc2 = jumpCnt;
             jumpCnt++;
@@ -167,6 +173,7 @@ static void genStmt( TreeNode * tree)
             emitJumpLabel(savedLoc2);
             break;
         case RetK:
+            emitPop("v0");
             emitComment("RetK");
             break;
         default:

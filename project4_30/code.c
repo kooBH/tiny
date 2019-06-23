@@ -35,10 +35,15 @@ void emitIfFalse(int c){
 void emitIfTrue(int c){
     if (TraceCode) fprintf(code,"L%-3d: bnez $t0, J%-3d\n",emitLoc,c);
     emitLoc++;
+}
 
 
 void emitStackPop(int offset){
     if (TraceCode) fprintf(code,"L%-3d: addi $sp, $sp, %d\n",emitLoc,offset);
+    emitLoc++;
+}
+void emitStackPush(int offset){
+    if (TraceCode) fprintf(code,"L%-3d: sub $sp, $sp, %d\n",emitLoc,offset);
     emitLoc++;
 }
 
@@ -71,6 +76,26 @@ void emitJAL(char* label)
     strcpy( c, "jal     " );
     strcat( c, label );
     emitCode( c );
+}
+
+void emitPush(char* reg)
+{
+    char* c = (char *)malloc(strlen(reg) + 17);
+    emitCode("sub     $sp, $sp, 4");
+    strcpy( c, "sw      " );
+    strcpy( c, reg );
+    strcpy( c, "0($sp)" );
+    emitCode( c );
+}
+
+void emitPop(char* reg)
+{
+    char* c = (char *)malloc(strlen(reg) + 17);
+    strcpy( c, "lw      " );
+    strcpy( c, reg );
+    strcpy( c, "0($sp)" );
+    emitCode( c );
+    emitCode("addi    $sp, $sp, 4");
 }
 
 void emitFuncStart()
