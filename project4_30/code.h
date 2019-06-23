@@ -27,6 +27,7 @@ void emitJump2JumpLabel(int);
 
 /*if */
 void emitIfFalse(int);
+void emitIfTrue(int);
 
 /* just write some codes with location
  * */

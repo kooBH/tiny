@@ -28,9 +28,13 @@ void emitJumpLabel(int c){
 }
 
 void emitIfFalse(int c){
-    if (TraceCode) fprintf(code,"L%-3d: bnez $t0, J%-3d\n",emitLoc,c);
+    if (TraceCode) fprintf(code,"L%-3d: beqz $t0, J%-3d\n",emitLoc,c);
     emitLoc++;
 }
+
+void emitIfTrue(int c){
+    if (TraceCode) fprintf(code,"L%-3d: bnez $t0, J%-3d\n",emitLoc,c);
+    emitLoc++;
 
 
 void emitStackPop(int offset){
