@@ -194,9 +194,9 @@ void emitStartup()
     emitString("\n");
 
     /* add next line*/
-    // emitCode("li $v0, 4");
-    // emitCode("la $a0, nextline");
-    // emitCode("syscall");
+     emitCode("li $v0, 4");
+     emitCode("la $a0, nextline");
+     emitCode("syscall");
 
     emitCode("lw      $ra, 0($sp)");
     emitCode("lw      $fp, 4($sp)");
