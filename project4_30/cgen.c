@@ -44,10 +44,10 @@ static void genDecl( TreeNode * tree)
             /* global vars 선언에서 바로 main 으로*/
             if(!isGlobalVarsDone){
                 isGlobalVarsDone=TRUE;
-                emitString(".text\n");
+                emitString("    .text\n");
                 emitLabel("main");
-                emitCode("jal __main");
-                emitCode("li $v0, 10");
+                emitCode("jal     __main");
+                emitCode("li      $v0, 10");
                 emitCode("syscall");
                 emitString("\n");
 
@@ -58,7 +58,6 @@ static void genDecl( TreeNode * tree)
                 emitCode("sw      $ra, 0($sp)");
                 emitCode("move    $fp, $sp");
                 emitString("\n");
-                emitCode("lw      $a0, 8($sp)");
                 emitCode("li      $v0, 1");
                 emitCode("syscall");
                 emitString("\n");
@@ -74,7 +73,7 @@ static void genDecl( TreeNode * tree)
                 emitCode("sw      $ra, 0($sp)");
                 emitCode("move    $fp, $sp");
                 emitString("\n");
-                emitCode("li      $v0, 1");
+                emitCode("li      $v0, 5");
                 emitCode("syscall");
                 emitString("\n");
                 emitCode("lw      $ra, 0($sp)");
@@ -329,6 +328,8 @@ static void cGen( TreeNode * tree)
 { 
 
     int i=0;
+    int offset=0;
+    TreeNode * temp;
     if (tree != NULL)
     {
 #if DEBUG
@@ -371,9 +372,29 @@ static void cGen( TreeNode * tree)
                 case StmtK:
                     switch(tree->kind.stmt){
                         case CompK:
+                           offset = 0;
                             // Compound 끝에 stack관리
-                            emitCode("move $sp,$s0");
+                            //emitCode("move $sp,$s0");
+                            temp = tree->child[0];
+                            while(temp!=NULL){
+                              switch(temp->kind.decl){
+                                case VarK:
+                                  offset+=4;
+                                  break;
+                                case ArrVarK:
+                                  offset +=4*temp->attr.arr.size;
+                                  break;
+                              
+                              }
+                              temp =temp->sibling;
+#if DEBUG 
+                              printf("stack offset %d\n",offset);
+
+#endif
+                            }
+
                             emitComment("end of CompK : stack manage");
+                            emitStackPop(offset);
                             break;
                         default:
                             break;

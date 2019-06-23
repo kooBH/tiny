@@ -43,6 +43,8 @@ void emitCode(char* c);
 
 void emitJAL(char* label);
 
+void emitStackPop(int offset);
+
 void emitFuncStart(TreeNode* tree);
 void emitFuncEnd(TreeNode* tree);
 void emitCall(TreeNode* tree);
