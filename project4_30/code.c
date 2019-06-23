@@ -54,6 +54,26 @@ void emitJAL(char* label)
     emitCode( c );
 }
 
+void emitPush(char* reg)
+{
+    char* c = (char *)malloc(strlen(reg) + 17);
+    emitCode("sub     $sp, $sp, 4");
+    strcpy( c, "sw      " );
+    strcpy( c, reg );
+    strcpy( c, "0($sp)" );
+    emitCode( c );
+}
+
+void emitPop(char* reg)
+{
+    char* c = (char *)malloc(strlen(reg) + 17);
+    strcpy( c, "lw      " );
+    strcpy( c, reg );
+    strcpy( c, "0($sp)" );
+    emitCode( c );
+    emitCode("addi    $sp, $sp, 4");
+}
+
 void emitFuncStart()
 {
 #if DEBUG

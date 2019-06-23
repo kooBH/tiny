@@ -12,8 +12,6 @@
 #include "code.h"
 #include "cgen.h"
 
-
-
 static int  isGlobalVarsDone=FALSE;
 
 /* tmpOffset is the memory offset for temps
@@ -24,7 +22,6 @@ static int tmpOffset = 0;
 
 /* prototype for internal recursive code generator */
 static void cGen (TreeNode * tree);
-
 
 /* Procedure genStmt generates code at a statement node */
 static void genDecl( TreeNode * tree)
@@ -51,7 +48,6 @@ static void genDecl( TreeNode * tree)
             if(!strcmp(tree->attr.name,"main"))
             {
                 emitLabel("__main");
-
             }
             else
             {
