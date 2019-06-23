@@ -18,6 +18,21 @@ static int emitLoc = 0 ;
 static int highEmitLoc = 0;
 
 
+void emitJump2JumpLabel(int c){
+    if (TraceCode) fprintf(code,"L%-3d: j J%-3d\n",emitLoc,c);
+    emitLoc++;
+}
+
+void emitJumpLabel(int c){
+    if (TraceCode) fprintf(code,"J%-3d: \n",c);
+}
+
+void emitIfFalse(int c){
+    if (TraceCode) fprintf(code,"L%-3d: bnez $t0, J%-3d\n",emitLoc,c);
+    emitLoc++;
+}
+
+
 void emitStackPop(int offset){
     if (TraceCode) fprintf(code,"L%-3d: addi $sp, $sp, %d\n",emitLoc,offset);
     emitLoc++;

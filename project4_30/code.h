@@ -37,6 +37,15 @@ void emitLabel(char* c);
 /* emitJal*/
 void emitJal(char* c);
 
+
+/* Label for jump */
+void emitJumpLabel(int);
+
+void emitJump2JumpLabel(int);
+
+/*if */
+void emitIfFalse(int);
+
 /* just write some codes with location
  * */
 void emitCode(char* c);
