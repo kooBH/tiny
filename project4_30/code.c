@@ -155,7 +155,7 @@ void emitFuncEnd(TreeNode* tree)
     emitString("\n");
 }
 
-void emitCall(TreeNode* tree)
+void emitCall(char* label)
 {
     emitJAL(label);
     emitString("\n");
@@ -172,8 +172,8 @@ void emitComment( char * c )
 
 void emitStartup()
 {
- //   emitString("    .data\n");
-  //  emitString("nextline:    .asciiz \"\\n\"\n");
+    emitString("    .data\n");
+    emitString("nextline:    .asciiz \"\\n\"\n");
     emitString("    .text\n");
     emitLabel("main");
     emitCode("sub     $fp, $sp, 4");
@@ -192,6 +192,12 @@ void emitStartup()
     emitCode("li      $v0, 1");
     emitCode("syscall");
     emitString("\n");
+
+    /* add next line*/
+    emitCode("li $v0, 4");
+    emitCode("la $a0, nextline");
+    emitCode("syscall");
+
     emitCode("lw      $ra, 0($sp)");
     emitCode("lw      $fp, 4($sp)");
     emitCode("add     $sp, $sp, 8");
