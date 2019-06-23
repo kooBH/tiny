@@ -327,6 +327,8 @@ static void cGen( TreeNode * tree)
 { 
 
     int i=0;
+    int offset=0;
+    TreeNode * temp;
     if (tree != NULL)
     {
 #if DEBUG
@@ -369,9 +371,29 @@ static void cGen( TreeNode * tree)
                 case StmtK:
                     switch(tree->kind.stmt){
                         case CompK:
+                           offset = 0;
                             // Compound 끝에 stack관리
-                            emitCode("move $sp,$s0");
+                            //emitCode("move $sp,$s0");
+                            temp = tree->child[0];
+                            while(temp!=NULL){
+                              switch(temp->kind.decl){
+                                case VarK:
+                                  offset+=4;
+                                  break;
+                                case ArrVarK:
+                                  offset +=4*temp->attr.arr.size;
+                                  break;
+                              
+                              }
+                              temp =temp->sibling;
+#if DEBUG 
+                              printf("stack offset %d\n",offset);
+
+#endif
+                            }
+
                             emitComment("end of CompK : stack manage");
+                            emitStackPop(offset);
                             break;
                         default:
                             break;

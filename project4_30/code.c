@@ -17,6 +17,12 @@ static int emitLoc = 0 ;
    emitBackup, and emitRestore */
 static int highEmitLoc = 0;
 
+
+void emitStackPop(int offset){
+    if (TraceCode) fprintf(code,"L%-3d: addi $sp, $sp, %d\n",emitLoc,offset);
+    emitLoc++;
+}
+
 void emitString(char* c)
 {
     if (TraceCode) fprintf(code,"%s",c);

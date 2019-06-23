@@ -43,6 +43,8 @@ void emitCode(char* c);
 
 void emitJAL(char* label);
 
+void emitStackPop(int offset);
+
 void emitFuncStart();
 void emitFuncEnd();
 void emitCall(char* label);
