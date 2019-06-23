@@ -115,6 +115,7 @@ TreeNode* newStmtNode( StmtKind kind )
         t->nodekind = StmtK;
         t->kind.stmt = kind;
         t->lineno = lineno;
+        t->visited = FALSE;
     }
     return t;
 }
@@ -136,6 +137,7 @@ TreeNode* newExpNode( ExpKind kind )
         t->nodekind = ExpK;
         t->kind.exp = kind;
         t->lineno = lineno;
+        t->visited = FALSE;
         if ( kind == ConstK )
             t->type = INT;
         else
@@ -162,6 +164,7 @@ TreeNode* newDeclNode( DeclKind kind )
         t->nodekind = DeclK;
         t->kind.decl = kind;
         t->lineno = lineno;
+        t->visited = FALSE;
     }
     return t;
 }
@@ -183,6 +186,7 @@ TreeNode* newParamNode( ParamKind kind )
         t->nodekind = ParamK;
         t->kind.param = kind;
         t->lineno = lineno;
+        t->visited = FALSE;
     }
     return t;
 }
@@ -204,6 +208,7 @@ TreeNode* newTypeNode( TypeKind kind )
         t->nodekind = TypeK;
         t->kind.type = kind;
         t->lineno = lineno;
+        t->visited = FALSE;
     }
     return t;
 }

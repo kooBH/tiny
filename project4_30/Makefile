@@ -39,4 +39,4 @@ hw3.tab.o: hw3.y globals.h
 .PHONY: clean
 
 clean:
-	rm -f $(OBJS) lex.yy.c hw3.tab.c hw3.tab.h project4_30
+	rm -f $(OBJS) lex.yy.c hw3.tab.c hw3.tab.h project4_30 test.spim
