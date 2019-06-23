@@ -224,20 +224,15 @@ static void genExp( TreeNode * tree)
 #if DEBUG
               printf("ExpK OpK\n");
 #endif
-              emitComment(">>ExpK OpK");
+            emitComment(">>ExpK OpK Plus");
             p1 = tree->child[0];
             p2 = tree->child[1];
-
-
-           switch (tree->attr.op) {
-                case PLUS:
-            emitComment(">>ExpK OpK Plus");
-                  cGen(p2);
-                  cGen(p1);
-                  p1->visited=TRUE;
-                  p2->visited=TRUE;
-                  emitPop("$t1");
-                  emitPop("$t0");
+            cGen(p2);
+            cGen(p1);
+            p1->visited=TRUE;
+            p2->visited=TRUE;
+            emitPop("$t1");
+            emitPop("$t0");
            switch (tree->attr.op) {
                 case PLUS:
                   emitCode("add $t2, $t0, $t1 ");
