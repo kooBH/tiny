@@ -1,0 +1,21 @@
+int f(int a, int b[])
+{
+    int c;
+
+    c = a;
+    return b[a+c];
+}
+
+void main(void)
+{
+    int d[10];
+    int i;
+
+    while( i < 10 )
+    {
+        d[i] = i;
+        i = i + 1;
+    }
+
+    output(f(1,d));
+}

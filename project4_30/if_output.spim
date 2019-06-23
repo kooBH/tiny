@@ -1,0 +1,110 @@
+# File : if_output.spim
+# Language : C-
+# Area for global Variables
+
+# End of area for global Variables
+
+    .data
+nextline:    .asciiz "\n"
+    .text
+main:
+L0  : add     $fp, $sp, 4
+L1  : jal     __main
+L2  : li      $v0, 10
+L3  : syscall
+
+# Code for void output(int) function
+output:
+L4  : sub     $sp, $sp, 8
+L5  : sw      $fp, 4($sp)
+L6  : sw      $ra, 0($sp)
+L7  : add     $fp, $sp, 4
+
+L8  : li      $v0, 1
+L9  : syscall
+
+L10 : lw      $ra, 0($sp)
+L11 : lw      $fp, 4($sp)
+L12 : add     $sp, $sp, 8
+L13 : jr      $ra
+
+# Code for int input(void) function
+input:
+L14 : sub     $sp, $sp, 8
+L15 : sw      $fp, 4($sp)
+L16 : sw      $ra, 0($sp)
+L17 : add     $fp, $sp, 4
+
+L18 : li      $v0, 5
+L19 : syscall
+
+L20 : lw      $ra, 0($sp)
+L21 : lw      $fp, 4($sp)
+L22 : add     $sp, $sp, 8
+L23 : sub     $sp, $sp, 4
+L24 : sw      $v0, 0($sp)
+L25 : jr      $ra
+
+__main:
+# Start of FuncK
+
+L26 : sub     $sp, $sp, 8
+L27 : sw      $fp, 4($sp)
+L28 : sw      $ra, 0($sp)
+L29 : add     $fp, $sp, 4
+
+# FuncK body start here
+# paramK
+# CompK entry
+L30 : sub $sp,$sp,4
+# >>ExpK AssignK
+# >>ExpK CosntK
+L31 : li      $t0, 2  
+L32 : sub     $sp, $sp, 4
+L33 : sw      $t0, 0($sp)
+# <<ExpK CosntK
+L34 : lw      $t1, 0($sp)
+L35 : addi    $sp, $sp, 4
+L36 : sw      $t1,  -8($fp)
+# <<ExpK AssignK
+# >>ExpK IdK
+L37 : lw      $t0,  -8($fp)
+L38 : sub     $sp, $sp, 4
+L39 : sw      $t0, 0($sp)
+# <<ExpK IdK
+L40 : lw      $a0, 0($sp)
+L41 : addi    $sp, $sp, 4
+L42 : jal     output
+
+# Function return here
+# >>ExpK AssignK
+# >>ExpK CosntK
+L43 : li      $t0, 3  
+L44 : sub     $sp, $sp, 4
+L45 : sw      $t0, 0($sp)
+# <<ExpK CosntK
+L46 : lw      $t1, 0($sp)
+L47 : addi    $sp, $sp, 4
+L48 : sw      $t1,  -8($fp)
+# <<ExpK AssignK
+# >>ExpK IdK
+L49 : lw      $t0,  -8($fp)
+L50 : sub     $sp, $sp, 4
+L51 : sw      $t0, 0($sp)
+# <<ExpK IdK
+L52 : lw      $a0, 0($sp)
+L53 : addi    $sp, $sp, 4
+L54 : jal     output
+
+# Function return here
+# FuncK body end here
+
+L55 : lw      $ra, 0($sp)
+L56 : lw      $fp, 8($sp)
+L57 : sub     $sp, $sp, 8
+L58 : jr      $ra
+# End of FuncK
+
+
+# End of code.
+

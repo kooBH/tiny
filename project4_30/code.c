@@ -133,7 +133,7 @@ void emitFuncStart(TreeNode* tree)
     emitCode("sub     $sp, $sp, 8");
     emitCode("sw      $fp, 4($sp)");
     emitCode("sw      $ra, 0($sp)");
-    emitCode("sub     $fp, $sp, 4");
+    emitCode("add     $fp, $sp, 4");
     emitString("\n");
 
     if (TraceCode) emitComment("FuncK body start here");
@@ -176,7 +176,7 @@ void emitStartup()
     emitString("nextline:    .asciiz \"\\n\"\n");
     emitString("    .text\n");
     emitLabel("main");
-    emitCode("sub     $fp, $sp, 4");
+    emitCode("add     $fp, $sp, 4");
     emitCode("jal     __main");
     emitCode("li      $v0, 10");
     emitCode("syscall");
@@ -194,9 +194,9 @@ void emitStartup()
     emitString("\n");
 
     /* add next line*/
-    emitCode("li $v0, 4");
-    emitCode("la $a0, nextline");
-    emitCode("syscall");
+    // emitCode("li $v0, 4");
+    // emitCode("la $a0, nextline");
+    // emitCode("syscall");
 
     emitCode("lw      $ra, 0($sp)");
     emitCode("lw      $fp, 4($sp)");
