@@ -134,7 +134,6 @@ static void genStmt( TreeNode * tree)
               cGen(p3);
               emitJumpLabel(savedLoc2);
             }
-            printf("BB\n");
           break;
 
 
@@ -219,6 +218,7 @@ static void genExp( TreeNode * tree)
 #if DEBUG
               printf("ExpK OpK\n");
 #endif
+              emitComment(">>ExpK OpK");
             p1 = tree->child[0];
             p2 = tree->child[1];
 
@@ -266,6 +266,7 @@ static void genExp( TreeNode * tree)
             } /* case op */
             emitPush("$t2");
             tree->visited = TRUE;
+              emitComment("<<ExpK OpK");
             break; /* OpK */
         case CallK:
 #if DEBUG
@@ -311,6 +312,21 @@ static void cGen( TreeNode * tree)
 #if DEBUG
         printf("cGen lineno %d\n",tree->lineno);
 #endif
+        /*
+        if(!(tree->visited)){
+        emitComment(">>>Print for debugging");
+        emitCode("li $v0, 1");
+        emitLi("$t0",tree->lineno);
+        emitCode("move $a0, $t0");
+        emitCode("syscall");
+        emitCode("li $v0, 4");
+        emitCode("la $a0, nextline");
+        emitCode("syscall");
+        emitComment("<<<Print for debugging");
+        }
+        else
+           return;
+           */
         switch (tree->nodekind) {
             case StmtK:
                 genStmt(tree);
@@ -406,7 +422,6 @@ void codeGen(TreeNode * syntaxTree, char * codefile)
 
     emitComment(s);
     emitComment("Language : C-");
-    emitString("    .data\n");
     emitComment("Area for global Variables");
     emitString("\n");
     emitComment("End of area for global Variables");

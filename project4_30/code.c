@@ -146,7 +146,7 @@ void emitFuncEnd()
     emitCode("lw      $ra, 0($sp)");
     emitCode("lw      $fp, 4($sp)");
     emitCode("addi    $sp, $sp, 4");
-    emitCode("jr      $ra");
+//    emitCode("jr      $ra");
     
 #if DEBUG
     emitComment("End of FuncK");
@@ -174,6 +174,8 @@ void emitComment( char * c )
 
 void emitStartup()
 {
+ //   emitString("    .data\n");
+  //  emitString("nextline:    .asciiz \"\\n\"\n");
     emitString("    .text\n");
     emitLabel("main");
     emitCode("jal     __main");
