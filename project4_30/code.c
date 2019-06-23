@@ -22,6 +22,12 @@ void emitString(char* c)
     if (TraceCode) fprintf(code,"%s",c);
 }
 
+void emitJal(char*c)
+{
+    if (TraceCode) fprintf(code,"%3d: jal %s\n",emitLoc,c);
+    emitLoc++;
+}
+
 void emitLabel(char* c)
 {
     if (TraceCode) fprintf(code,"%s:\n",c);
