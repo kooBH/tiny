@@ -24,7 +24,7 @@ void emitString(char* c)
 
 void emitJal(char*c)
 {
-    if (TraceCode) fprintf(code,"%3d: jal %s\n",emitLoc,c);
+    if (TraceCode) fprintf(code,"L%d: jal %s\n",emitLoc,c);
     emitLoc++;
 }
 
@@ -36,7 +36,7 @@ void emitLabel(char* c)
 /* just write some codes*/
 void emitCode(char* c)
 {
-    if (TraceCode) fprintf(code,"%3d: %s\n",emitLoc,c);
+    if (TraceCode) fprintf(code,"L%d: %s\n",emitLoc,c);
     ++emitLoc ;
 }
 
@@ -119,8 +119,8 @@ void emitComment( char * c )
  */
 void emitRO( char *op, int r, int s, int t, char *c)
 {
-    fprintf(code,"%3d:  %5s  %d,%d,%d ",emitLoc++,op,r,s,t);
-    if (TraceCode) fprintf(code,"\t%s",c) ;
+    fprintf(code,"L%d:  %5s  %d,%d,%d ",emitLoc++,op,r,s,t);
+    // if (TraceCode) fprintf(code,"\t%s",c) ;
     fprintf(code,"\n") ;
     if (highEmitLoc < emitLoc) highEmitLoc = emitLoc ;
 } /* emitRO */
@@ -135,8 +135,8 @@ void emitRO( char *op, int r, int s, int t, char *c)
  */
 void emitRM( char * op, int r, int d, int s, char *c)
 {
-    fprintf(code,"%3d:  %5s  %d,%d(%d) ",emitLoc++,op,r,d,s);
-    if (TraceCode) fprintf(code,"\t%s",c) ;
+    fprintf(code,"L%d:  %5s  %d,%d(%d) ",emitLoc++,op,r,d,s);
+    // if (TraceCode) fprintf(code,"\t%s",c) ;
     fprintf(code,"\n") ;
     if (highEmitLoc < emitLoc)  highEmitLoc = emitLoc ;
 } /* emitRM */
@@ -181,10 +181,10 @@ void emitRestore(void)
  */
 void emitRM_Abs( char *op, int r, int a, char * c)
 {
-    fprintf(code,"%3d:  %5s  %d,%d(%d) ",
+    fprintf(code,"L%d:  %5s  %d,%d(%d) ",
                emitLoc,op,r,a-(emitLoc+1),pc);
     ++emitLoc ;
-    if (TraceCode) fprintf(code,"\t%s",c) ;
+    // if (TraceCode) fprintf(code,"\t%s",c) ;
     fprintf(code,"\n") ;
     if (highEmitLoc < emitLoc) highEmitLoc = emitLoc ;
 } /* emitRM_Abs */

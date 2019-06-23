@@ -607,21 +607,47 @@ fprintf(listing,"%s = %d\n",
                          t->child[0]->kind.exp == CallK )
                         // assign function return void
                     {
-                        t_1 = st_lookup_buck(t->child[0]->attr.name)->node;
-                        if( t_1->type == VOID )
+                        if( strcmp( t->child[0]->attr.name, "input" ) == 0 ) // input()
+                        {
+                            // input will return int
+                        }
+                        else if( strcmp( t->child[0]->attr.name, "output" ) == 0 ) // output()
+                        {
                             fprintf( listing,
                                     "ERROR in line %d : void cannot operated\n",
                                     t->lineno );
+                        }
+                        else
+                        {
+                            t_1 = st_lookup_buck(t->child[0]->attr.name)->node;
+                            if( t_1->type == VOID )
+                                fprintf( listing,
+                                        "ERROR in line %d : void cannot operated\n",
+                                        t->lineno );
+                        }
                     }
                     if ( t->child[1]->nodekind == ExpK &&
                          t->child[1]->kind.exp == CallK)
                         // assign function return void
                     {
-                        t_1 = st_lookup_buck(t->child[1]->attr.name)->node;
-                        if ( t_1->type == VOID )
+                        if( strcmp( t->child[1]->attr.name, "input" ) == 0 ) // input()
+                        {
+                            // input will return int
+                        }
+                        else if( strcmp( t->child[1]->attr.name, "output" ) == 0 ) // output()
+                        {
                             fprintf( listing,
                                     "ERROR in line %d : void cannot operated\n",
                                     t->lineno );
+                        }
+                        else
+                        {
+                            t_1 = st_lookup_buck(t->child[1]->attr.name)->node;
+                            if ( t_1->type == VOID )
+                                fprintf( listing,
+                                        "ERROR in line %d : void cannot operated\n",
+                                        t->lineno );
+                        }
                     }
                     
                     break;
