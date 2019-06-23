@@ -110,6 +110,7 @@ static void genStmt( TreeNode * tree)
             /***  IF  ***/
             emitComment("IfK if");
             cGen(p1);
+            p1->visited=TRUE;
             //savedLoc1 = emitSkip(1) ;
             emitPop("$t0");
             emitIfFalse(jumpCnt);
@@ -120,6 +121,7 @@ static void genStmt( TreeNode * tree)
             /*** THEN ***/
             emitComment("IfK Then");
             cGen(p2);
+            p2->visited=TRUE;
             //savedLoc2 = emitSkip(1) ;
             if(p3 !=NULL){
               emitJump2JumpLabel(jumpCnt);
@@ -132,6 +134,7 @@ static void genStmt( TreeNode * tree)
             if(p3 != NULL){
               emitComment("IfK Else");
               cGen(p3);
+              p3->visited=TRUE;
               emitJumpLabel(savedLoc2);
             }
           break;
@@ -205,6 +208,7 @@ static void genExp( TreeNode * tree)
             emitLi("$t0",tree->attr.val);
             emitPush("$t0");
             emitComment("<<ExpK CosntK");
+            tree->visited=TRUE;
             break; /* ConstK */
 
         case IdK :
@@ -217,6 +221,7 @@ static void genExp( TreeNode * tree)
             emitPush("$t0");
             
             emitComment("<<ExpK IdK");
+            tree->visited=TRUE;
             break; /* IdK */
 
         case OpK :
@@ -274,6 +279,7 @@ static void genExp( TreeNode * tree)
               emitComment("<<ExpK OpK");
             break; /* OpK */
         case CallK:
+            if(tree->visited)break;
 #if DEBUG
             printf("ExpK CallK %s\n",tree->attr.name);
 #endif
@@ -299,6 +305,7 @@ static void genExp( TreeNode * tree)
             // {
                 // emitPop("$t0");
             // }
+            tree->visited=TRUE;
             break;
 
         case AssignK:
