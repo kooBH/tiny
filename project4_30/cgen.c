@@ -200,7 +200,7 @@ static void genExp( TreeNode * tree)
     int loc;
     char buff[10];
     TreeNode *p1, *p2;
-    if(tree->visited) return;
+    if( tree->visited == TRUE ) return;
     switch (tree->kind.exp)
     {
         case ConstK :
@@ -253,10 +253,15 @@ static void genExp( TreeNode * tree)
                 p1 = p1->sibling;
             }
             emitCall(tree->attr.name);
-            if( tree->attr.type == INT ) // have return value
-            {
-                emitPop("$t0");
-            }
+            // if( strcmp( tree->attr.name, "output" ) == 0 )
+            // {
+                // //do nothing
+            // }
+            // else if( strcmp( tree->attr.name, "input" ) == 0 || // name is input of
+                // tree->type == INT ) // have return value
+            // {
+                // emitPop("$t0");
+            // }
             break;
 
         case AssignK:
@@ -287,7 +292,6 @@ static void cGen( TreeNode * tree)
 #if DEBUG
         printf("cGen lineno %d\n",tree->lineno);
 #endif
-        tree->visited = 1;
         switch (tree->nodekind) {
             case StmtK:
                 genStmt(tree);
@@ -304,6 +308,7 @@ static void cGen( TreeNode * tree)
             default:
                 break;
         }
+        tree->visited = TRUE;
         for( i=0; i<MAXCHILDREN;i++){
             cGen(tree->child[i]);
             if(tree->child[i]==NULL)

@@ -84,8 +84,8 @@ void emitPush(char* reg)
     char* c = (char *)malloc(strlen(reg) + 17);
     emitCode("sub     $sp, $sp, 4");
     strcpy( c, "sw      " );
-    strcpy( c, reg );
-    strcpy( c, ", 0($sp)" );
+    strcat( c, reg );
+    strcat( c, ", 0($sp)" );
     emitCode( c );
     free(c);
 }
@@ -94,8 +94,8 @@ void emitPop(char* reg)
 {
     char* c = (char *)malloc(strlen(reg) + 17);
     strcpy( c, "lw      " );
-    strcpy( c, reg );
-    strcpy( c, ", 0($sp)" );
+    strcat( c, reg );
+    strcat( c, ", 0($sp)" );
     emitCode( c );
     emitCode("addi    $sp, $sp, 4");
     free(c);
@@ -121,8 +121,8 @@ void emitFuncEnd()
 
     emitString("\n");
     emitCode("lw      $ra, 0($sp)");
-    emitCode("lw      $fp, 4($sp)");
-    emitCode("addi    $sp, $sp, 4");
+    emitCode("lw      $fp, 8($sp)");
+    emitCode("sub     $sp, $sp, 8");
     emitCode("jr      $ra");
     emitString("\n");
 
@@ -131,15 +131,9 @@ void emitFuncEnd()
 
 void emitCall(char* label)
 {
-    emitComment("Start of CallK");
-    emitCode("sub     $sp, $sp, 4");
-    emitCode("sw      $a0, 0($sp)");
     emitJAL(label);
     emitString("\n");
     emitComment("Function return here");
-    emitCode("addi    $sp, $sp, 4");
-    emitComment("End of CallK");
-    emitString("\n");
 }
 
 /* Procedure emitComment prints a comment line 
@@ -154,6 +148,7 @@ void emitStartup()
 {
     emitString("    .text\n");
     emitLabel("main");
+    emitCode("sub     $fp, $sp, 4");
     emitCode("jal     __main");
     emitCode("li      $v0, 10");
     emitCode("syscall");
@@ -164,14 +159,14 @@ void emitStartup()
     emitCode("sub     $sp, $sp, 8");
     emitCode("sw      $fp, 4($sp)");
     emitCode("sw      $ra, 0($sp)");
-    emitCode("move    $fp, $sp");
+    emitCode("add     $fp, $sp, 4");
     emitString("\n");
     emitCode("li      $v0, 1");
     emitCode("syscall");
     emitString("\n");
     emitCode("lw      $ra, 0($sp)");
     emitCode("lw      $fp, 4($sp)");
-    emitCode("addi    $sp, $sp, 8");
+    emitCode("add     $sp, $sp, 8");
     emitCode("jr      $ra");
     emitString("\n");
 
@@ -180,14 +175,15 @@ void emitStartup()
     emitCode("sub     $sp, $sp, 8");
     emitCode("sw      $fp, 4($sp)");
     emitCode("sw      $ra, 0($sp)");
-    emitCode("move    $fp, $sp");
+    emitCode("add     $fp, $sp, 4");
     emitString("\n");
     emitCode("li      $v0, 5");
     emitCode("syscall");
     emitString("\n");
     emitCode("lw      $ra, 0($sp)");
     emitCode("lw      $fp, 4($sp)");
-    emitCode("addi    $sp, $sp, 8");
+    emitCode("add     $sp, $sp, 8");
+    emitPush("$v0");
     emitCode("jr      $ra");
     emitString("\n");
 }
