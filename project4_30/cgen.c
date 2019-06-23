@@ -196,8 +196,11 @@ static void genExp( TreeNode * tree)
 #if DEBUG
     printf("genExp\n");
 #endif
+    int i;
     int loc;
-   TreeNode *p1, *p2;
+    char buff[10];
+    TreeNode *p1, *p2;
+    if(tree->visited) return;
     switch (tree->kind.exp)
     {
         case ConstK :
@@ -226,7 +229,7 @@ static void genExp( TreeNode * tree)
             if (TraceCode) emitComment("-> Op") ;
             p1 = tree->child[0];
             p2 = tree->child[1];
-           switch (tree->attr.op) {
+            switch (tree->attr.op) {
                 default:
                     emitComment("BUG: Unknown operator");
                     break;
@@ -237,8 +240,24 @@ static void genExp( TreeNode * tree)
 #if DEBUG
             printf("ExpK CallK %s\n",tree->attr.name);
 #endif
+            i = 0;
+            p1 = tree->child[0]; // argement
+            while( p1 != NULL )
+            {
+                //param gen
+                cGen(p1);
+                    //add $a0-3
+                    // emitCode("move    $a0, $t0");
+                sprintf(buff, "$a%d", i);
+                emitPop(buff);
+                p1 = p1->sibling;
+            }
             emitCall(tree->attr.name);
-            break;   
+            if( tree->attr.type == INT ) // have return value
+            {
+                emitPop("$t0");
+            }
+            break;
 
         case AssignK:
             if (TraceCode) emitComment("-> assign") ;

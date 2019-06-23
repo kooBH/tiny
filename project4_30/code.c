@@ -76,6 +76,7 @@ void emitJAL(char* label)
     strcpy( c, "jal     " );
     strcat( c, label );
     emitCode( c );
+    free(c);
 }
 
 void emitPush(char* reg)
@@ -84,8 +85,9 @@ void emitPush(char* reg)
     emitCode("sub     $sp, $sp, 4");
     strcpy( c, "sw      " );
     strcpy( c, reg );
-    strcpy( c, "0($sp)" );
+    strcpy( c, ", 0($sp)" );
     emitCode( c );
+    free(c);
 }
 
 void emitPop(char* reg)
@@ -93,9 +95,10 @@ void emitPop(char* reg)
     char* c = (char *)malloc(strlen(reg) + 17);
     strcpy( c, "lw      " );
     strcpy( c, reg );
-    strcpy( c, "0($sp)" );
+    strcpy( c, ", 0($sp)" );
     emitCode( c );
     emitCode("addi    $sp, $sp, 4");
+    free(c);
 }
 
 void emitFuncStart()
