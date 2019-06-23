@@ -19,6 +19,16 @@ void emitLabel(char* c);
 /* emitJal*/
 void emitJal(char* c);
 
+
+/* Label for jump */
+void emitJumpLabel(int);
+
+void emitJump2JumpLabel(int);
+
+/*if */
+void emitIfFalse(int);
+void emitIfTrue(int);
+
 /* just write some codes with location
  * */
 void emitCode(char* c);
@@ -29,6 +39,7 @@ void emitPush(char* reg);
 void emitPop(char* reg);
 
 void emitStackPop(int offset);
+void emitStackPush(int offset);
 
 void emitFuncStart();
 void emitFuncEnd();
