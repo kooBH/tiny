@@ -39,6 +39,11 @@ void emitLabel(char* c);
  * */
 void emitCode(char* c);
 
+void emitJAL(char* label);
+
+void emitFuncStart();
+void emitFuncEnd();
+void emitCall(char* label);
 /* Procedure emitComment prints a comment line 
  * with comment c in the code file
  */

@@ -4,11 +4,16 @@ int c;
 int d;
 int e;
 
+void f(void)
+{
+    int ab;
+}
+
 void main(void){
 
   int aa;
 
   int bb;
   int cc;
-
+  f();
 }

@@ -1,0 +1,52 @@
+    .text
+main:
+    jal __main
+    li      $v0, 10
+    syscall #Term
+
+output:
+    sub     $sp, $sp, 8
+    sw      $fp, 4($sp)
+    sw      $ra, 0($sp)
+    move    $fp, $sp
+
+    # lw      $a0, 8($sp)
+    li      $v0, 1
+    syscall
+
+    lw      $ra, 0($sp)
+    lw      $fp, 4($sp)
+    addi    $sp, $sp, 8
+    jr      $ra
+ 
+input:
+    sub     $sp, $sp, 8
+    sw      $fp, 4($sp)
+    sw      $ra, 0($sp)
+    move    $fp, $sp
+
+    li      $v0, 5
+    syscall
+
+    lw      $ra, 0($sp)
+    lw      $fp, 4($sp)
+    addi    $sp, $sp, 8
+    jr      $ra
+
+__main:
+    sub     $sp, $sp, 8
+    sw      $fp, 4($sp)
+    sw      $ra, 0($sp)
+    move    $fp, $sp
+
+# main start here
+    jal     input
+    addi    $v0, $v0, 10
+    move    $a0, $v0
+    jal     output
+# main end here
+
+    lw      $ra, 0($sp)
+    lw      $fp, 4($sp)
+    addi    $sp, $sp, 8
+    jr      $ra

@@ -87,13 +87,10 @@ static void genDecl( TreeNode * tree){
       }else{
         emitLabel(tree->attr.name);
       }
-
       /* body of func */
       //p1 = tree->child[2];
       //cGen(p1);
-
-     emitComment("FuncK");
-
+        emitFuncStart();
       break;
     case VarK:
 #if DEBUG
@@ -307,9 +304,7 @@ static void genExp( TreeNode * tree)
          if (TraceCode)  emitComment("<- Op") ;
          break; /* OpK */
     case CallK:
-      
-
-         emitComment("CallK");
+         emitCall(tree->attr.name);
       break;   
 
     default:
@@ -358,8 +353,9 @@ static void cGen( TreeNode * tree)
               case FuncK:
                   // Function 끝에 return
                   if(tree->child[i]->nodekind == StmtK){
-                    emitComment("return ");
-                    emitCode("jr $ra");
+//                    emitComment("return ");
+//                    emitCode("jr $ra");
+                      emitFuncEnd();
                   }
                 break;
               default:
