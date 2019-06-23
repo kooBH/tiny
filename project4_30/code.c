@@ -172,6 +172,8 @@ void emitComment( char * c )
 
 void emitStartup()
 {
+ //   emitString("    .data\n");
+  //  emitString("nextline:    .asciiz \"\\n\"\n");
     emitString("    .text\n");
     emitLabel("main");
     emitCode("sub     $fp, $sp, 4");
