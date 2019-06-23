@@ -125,7 +125,7 @@ void emitPop(char* reg)
     free(c);
 }
 
-void emitFuncStart()
+void emitFuncStart(TreeNode* tree)
 {
     if (TraceCode) emitComment("Start of FuncK");
 
@@ -139,15 +139,15 @@ void emitFuncStart()
     if (TraceCode) emitComment("FuncK body start here");
 }
 
-void emitFuncEnd()
+void emitFuncEnd(TreeNode* tree)
 {
     if (TraceCode) emitComment("FuncK body end here");
 
     emitString("\n");
     emitCode("lw      $ra, 0($sp)");
-    emitCode("lw      $fp, 4($sp)");
-    emitCode("addi    $sp, $sp, 4");
-//    emitCode("jr      $ra");
+    emitCode("lw      $fp, 8($sp)");
+    emitCode("sub     $sp, $sp, 8");
+    emitCode("jr      $ra");
     
 #if DEBUG
     emitComment("End of FuncK");
@@ -155,17 +155,11 @@ void emitFuncEnd()
     emitString("\n");
 }
 
-void emitCall(char* label)
+void emitCall(TreeNode* tree)
 {
-    emitComment("Start of CallK");
-    emitCode("sub     $sp, $sp, 4");
-    emitCode("sw      $a0, 0($sp)");
     emitJAL(label);
     emitString("\n");
     emitComment("Function return here");
-    emitCode("addi    $sp, $sp, 4");
-    emitComment("End of CallK");
-    emitString("\n");
 }
 
 /* Procedure emitComment prints a comment line 
@@ -182,6 +176,7 @@ void emitStartup()
   //  emitString("nextline:    .asciiz \"\\n\"\n");
     emitString("    .text\n");
     emitLabel("main");
+    emitCode("sub     $fp, $sp, 4");
     emitCode("jal     __main");
     emitCode("li      $v0, 10");
     emitCode("syscall");
@@ -192,14 +187,14 @@ void emitStartup()
     emitCode("sub     $sp, $sp, 8");
     emitCode("sw      $fp, 4($sp)");
     emitCode("sw      $ra, 0($sp)");
-    emitCode("move    $fp, $sp");
+    emitCode("add     $fp, $sp, 4");
     emitString("\n");
     emitCode("li      $v0, 1");
     emitCode("syscall");
     emitString("\n");
     emitCode("lw      $ra, 0($sp)");
     emitCode("lw      $fp, 4($sp)");
-    emitCode("addi    $sp, $sp, 8");
+    emitCode("add     $sp, $sp, 8");
     emitCode("jr      $ra");
     emitString("\n");
 
@@ -208,14 +203,16 @@ void emitStartup()
     emitCode("sub     $sp, $sp, 8");
     emitCode("sw      $fp, 4($sp)");
     emitCode("sw      $ra, 0($sp)");
-    emitCode("move    $fp, $sp");
+    emitCode("add     $fp, $sp, 4");
     emitString("\n");
     emitCode("li      $v0, 5");
     emitCode("syscall");
     emitString("\n");
     emitCode("lw      $ra, 0($sp)");
     emitCode("lw      $fp, 4($sp)");
-    emitCode("addi    $sp, $sp, 8");
+    emitCode("add     $sp, $sp, 8");
+    emitPush("$v0");
     emitCode("jr      $ra");
     emitString("\n");
 }
+

@@ -189,8 +189,11 @@ static void genExp( TreeNode * tree)
 #if DEBUG
     printf("genExp\n");
 #endif
+    int i;
     int loc;
-   TreeNode *p1, *p2;
+    char buff[10];
+    TreeNode *p1, *p2;
+    if( tree->visited == TRUE ) return;
     switch (tree->kind.exp)
     {
         case ConstK :
@@ -225,6 +228,10 @@ static void genExp( TreeNode * tree)
             p1 = tree->child[0];
             p2 = tree->child[1];
 
+
+           switch (tree->attr.op) {
+                case PLUS:
+            emitComment(">>ExpK OpK Plus");
                   cGen(p2);
                   cGen(p1);
                   p1->visited=TRUE;
@@ -275,8 +282,29 @@ static void genExp( TreeNode * tree)
 #if DEBUG
             printf("ExpK CallK %s\n",tree->attr.name);
 #endif
+            i = 0;
+            p1 = tree->child[0]; // argement
+            while( p1 != NULL )
+            {
+                //param gen
+                cGen(p1);
+                    //add $a0-3
+                    // emitCode("move    $a0, $t0");
+                sprintf(buff, "$a%d", i);
+                emitPop(buff);
+                p1 = p1->sibling;
+            }
             emitCall(tree->attr.name);
-            break;   
+            // if( strcmp( tree->attr.name, "output" ) == 0 )
+            // {
+                // //do nothing
+            // }
+            // else if( strcmp( tree->attr.name, "input" ) == 0 || // name is input of
+                // tree->type == INT ) // have return value
+            // {
+                // emitPop("$t0");
+            // }
+            break;
 
         case AssignK:
 #if DEBUG
@@ -346,6 +374,7 @@ static void cGen( TreeNode * tree)
             default:
                 break;
         }
+        tree->visited = TRUE;
         for( i=0; i<MAXCHILDREN;i++){
             cGen(tree->child[i]);
             if(tree->child[i]==NULL)
@@ -357,7 +386,7 @@ static void cGen( TreeNode * tree)
                         case FuncK:
                             // Function 끝에 return
                             if(tree->child[i]->nodekind == StmtK){
-                                emitFuncEnd();
+                                emitFuncEnd( tree );
                             }
                             break;
                         default:

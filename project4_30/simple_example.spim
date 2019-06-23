@@ -33,6 +33,28 @@ input:
     addi    $sp, $sp, 8
     jr      $ra
 
+f:
+    sub     $sp, $sp, 8
+    sw      $fp, 4($sp)
+    sw      $ra, 0($sp)
+    move    $fp, $sp
+
+    # param a,b
+    # var c
+    sub     $sp, $sp, 4
+    # c = a + b
+    lw      $t0, 8($sp)
+    lw      $t1, 12($sp)
+    addi    $t2, $t0, $t1
+    sw      $t2, 4($sp)
+    # return c;
+
+    lw      $ra, 0($sp)
+    lw      $fp, 4($sp)
+    addi    $sp, $sp, 8
+    jr      $ra
+    
+
 __main:
     sub     $sp, $sp, 8
     sw      $fp, 4($sp)
