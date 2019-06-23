@@ -44,10 +44,10 @@ static void genDecl( TreeNode * tree)
             /* global vars 선언에서 바로 main 으로*/
             if(!isGlobalVarsDone){
                 isGlobalVarsDone=TRUE;
-                emitString(".text\n");
+                emitString("    .text\n");
                 emitLabel("main");
-                emitCode("jal __main");
-                emitCode("li $v0, 10");
+                emitCode("jal     __main");
+                emitCode("li      $v0, 10");
                 emitCode("syscall");
                 emitString("\n");
 
@@ -58,7 +58,6 @@ static void genDecl( TreeNode * tree)
                 emitCode("sw      $ra, 0($sp)");
                 emitCode("move    $fp, $sp");
                 emitString("\n");
-                emitCode("lw      $a0, 8($sp)");
                 emitCode("li      $v0, 1");
                 emitCode("syscall");
                 emitString("\n");
@@ -74,7 +73,7 @@ static void genDecl( TreeNode * tree)
                 emitCode("sw      $ra, 0($sp)");
                 emitCode("move    $fp, $sp");
                 emitString("\n");
-                emitCode("li      $v0, 1");
+                emitCode("li      $v0, 5");
                 emitCode("syscall");
                 emitString("\n");
                 emitCode("lw      $ra, 0($sp)");
