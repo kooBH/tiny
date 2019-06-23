@@ -655,59 +655,70 @@ fprintf(listing,"%s = %d\n",
                     break;
                 case CallK:
                     /* parameters - arguments check */
-                    l_1 = st_lookup_buck( t->attr.name );
-                    if ( l_1->node->nodekind != DeclK ||
-                         l_1->node->kind.decl != FuncK )  // call value
-                        printf( "ERROR in line %d : cannot call value\n",
-                                t->lineno );
-                    t_1 = t->child[0];          // call parameter
-                    t_2 = l_1->node->child[1];  // decl parameter
-                    t->type = l_1->node->type;
-                    if ( t_1 == NULL && t_2 != NULL && t_2->type != VOID )
+                    if( strcmp( t->attr.name, "output" ) == 0 )
                     {
-                        // func(void) > func(a,...)
-                        printf(
-                                "ERROR in line %d : the number of arguments is "
-                                "incorrect.\n",
-                                t->lineno );
+                        t_1 = t->child[0];          // call parameter
                     }
-                    else if ( t_1 != NULL && t_2 != NULL )
-                    // func(a,...) > func(b,...)
+                    else if( strcmp( t->attr.name, "input" ) == 0 )
                     {
-                        while ( t_1 != NULL || t_2 != NULL )
+                        t_1 = t->child[0];          // call parameter
+                    }
+                    else
+                    {
+                        l_1 = st_lookup_buck( t->attr.name );
+                        if ( l_1->node->nodekind != DeclK ||
+                             l_1->node->kind.decl != FuncK ) // call value
+                            printf( "ERROR in line %d : cannot call value\n",
+                                    t->lineno );
+                        t_1 = t->child[0];          // call parameter
+                        t_2 = l_1->node->child[1];  // decl parameter
+                        t->type = l_1->node->type;
+                        if ( t_1 == NULL && t_2 != NULL && t_2->type != VOID )
                         {
-                            if ( t_1 == NULL || t_2 == NULL )
+                            // func(void) > func(a,...)
+                            printf(
+                                    "ERROR in line %d : the number of arguments is "
+                                    "incorrect.\n",
+                                    t->lineno );
+                        }
+                        else if ( t_1 != NULL && t_2 != NULL )
+                        // func(a,...) > func(b,...)
+                        {
+                            while ( t_1 != NULL || t_2 != NULL )
                             {
-                                printf(
-                                        "ERROR in line %d : the number of arguments is "
-                                        "incorrect.\n",
-                                        t->lineno );
-                                break;
+                                if ( t_1 == NULL || t_2 == NULL )
+                                {
+                                    printf(
+                                            "ERROR in line %d : the number of arguments is "
+                                            "incorrect.\n",
+                                            t->lineno );
+                                    break;
+                                }
+                                if(!(t_1->nodekind==ExpK && t_1->kind.exp==ConstK) )
+                                {l_1 = st_lookup_buck(t_1->attr.name);
+                                t_3 = l_1->node;
+                                /*t_3 arg decl, t_2 paarm decl */
+                                if (  (t_2->kind.param == ArrParamK 
+                                    && t_3->kind.decl ==IdK)||
+                                    ( t_2->kind.param == NonArrParamK &&
+                                      t_3->kind.decl == ArrVarK
+                                     )
+                                    )
+                                    printf(
+                                            "ERROR in line %d : the type of argument is "
+                                            "incorrect.\n",
+                                            t->lineno );
+                                // const arg
+                                }else{
+                                   if(t_2->kind.param == ArrParamK) 
+                                    printf(
+                                            "ERROR in line %d : the type of argument is "
+                                            "incorrect.\n",
+                                            t->lineno );
+                                }
+                                t_1 = t_1->sibling;
+                                t_2 = t_2->sibling;
                             }
-                            if(!(t_1->nodekind==ExpK && t_1->kind.exp==ConstK) )
-                            {l_1 = st_lookup_buck(t_1->attr.name);
-                            t_3 = l_1->node;
-                            /*t_3 arg decl, t_2 paarm decl */
-                            if (  (t_2->kind.param == ArrParamK 
-                                && t_3->kind.decl ==IdK)||
-                                ( t_2->kind.param == NonArrParamK &&
-                                  t_3->kind.decl == ArrVarK
-                                 )
-                                )
-                                printf(
-                                        "ERROR in line %d : the type of argument is "
-                                        "incorrect.\n",
-                                        t->lineno );
-                            // const arg
-                            }else{
-                               if(t_2->kind.param == ArrParamK) 
-                                printf(
-                                        "ERROR in line %d : the type of argument is "
-                                        "incorrect.\n",
-                                        t->lineno );
-                            }
-                            t_1 = t_1->sibling;
-                            t_2 = t_2->sibling;
                         }
                     }
 

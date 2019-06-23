@@ -43,9 +43,9 @@ void emitCode(char* c);
 
 void emitJAL(char* label);
 
-void emitFuncStart();
-void emitFuncEnd();
-void emitCall(char* label);
+void emitFuncStart(TreeNode* tree);
+void emitFuncEnd(TreeNode* tree);
+void emitCall(TreeNode* tree);
 /* Procedure emitComment prints a comment line 
  * with comment c in the code file
  */

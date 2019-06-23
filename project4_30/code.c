@@ -48,43 +48,57 @@ void emitJAL(char* label)
     emitCode( c );
 }
 
-void emitFuncStart()
+void emitFuncStart(TreeNode* tree)
 {
-#if DEBUG
-    emitComment("Start of FuncK");
-#endif
+    emitComment("");
+    emitComment("Start of FuncK of");
+    emitComment(tree->attr.name);
+    emitComment("");
+
     emitCode("sub     $sp, $sp, 8");
     emitCode("sw      $fp, 4($sp)");
     emitCode("sw      $ra, 0($sp)");
     emitCode("sub     $fp, $sp, 4");
-#if DEBUG
+
+    emitComment("");
     emitComment("FuncK body start here");
-#endif
+    emitComment(tree->attr.name);
+    emitComment("");
 }
 
-void emitFuncEnd()
+void emitFuncEnd(TreeNode* tree)
 {
-#if DEBUG
+    emitComment("");
     emitComment("FuncK body end here");
-#endif
+    emitComment(tree->attr.name);
+    emitComment("");
+
     emitCode("lw      $ra, 0($sp)");
     emitCode("lw      $fp, 4($sp)");
     emitCode("addi    $sp, $sp, 4");
     emitCode("jr      $ra");
-#if DEBUG
+
+    emitComment("");
     emitComment("End of FuncK");
-#endif
+    emitComment(tree->attr.name);
+    emitComment("");
 }
 
-void emitCall(char* label)
+void emitCall(TreeNode* tree)
 {
+    emitComment("");
     emitComment("Start of CallK");
+    emitComment("");
+
     emitCode("sub     $sp, $sp, 4");
     emitCode("sw      $a0, 0($sp)");
-    emitJAL(label);
+    emitJAL(tree->attr.name);
     emitComment("Function return here");
     emitCode("addi    $sp, $sp, 4");
+
+    emitComment("");
     emitComment("End of CallK");
+    emitComment("");
 }
 
 /* Procedure emitComment prints a comment line 

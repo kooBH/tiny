@@ -92,7 +92,7 @@ static void genDecl( TreeNode * tree)
             /* body of func */
             //p1 = tree->child[2];
             //cGen(p1);
-            emitFuncStart();
+            emitFuncStart( tree );
             break;
         case VarK:
 #if DEBUG
@@ -248,10 +248,12 @@ static void genExp( TreeNode * tree)
 #if DEBUG
             printf("genExp ConstK\n");
 #endif
-            if (TraceCode) emitComment("-> Const") ;
-            /* gen code to load integer constant using LDC */
-            emitRM("LDC",ac,tree->attr.val,0,"load const");
-            if (TraceCode)  emitComment("<- Const") ;
+            // if (TraceCode) emitComment("-> Const") ;
+            // /* gen code to load integer constant using LDC */
+            // emitRM("LDC",ac,tree->attr.val,0,"load const");
+            // if (TraceCode)  emitComment("<- Const") ;
+            emitCode("li $t0, ");
+
             break; /* ConstK */
 
         case IdK :
@@ -310,7 +312,7 @@ static void genExp( TreeNode * tree)
 #if DEBUG
             printf("ExpK CallK %s\n",tree->attr.name);
 #endif
-            emitCall(tree->attr.name);
+            emitCall( tree );
             break;   
 
         default:
@@ -359,7 +361,7 @@ static void cGen( TreeNode * tree)
                         case FuncK:
                             // Function 끝에 return
                             if(tree->child[i]->nodekind == StmtK){
-                                emitFuncEnd();
+                                emitFuncEnd( tree );
                             }
                             break;
                         default:
