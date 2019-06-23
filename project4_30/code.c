@@ -36,7 +36,7 @@ void emitLabel(char* c)
 /* just write some codes*/
 void emitCode(char* c)
 {
-    if (TraceCode) fprintf(code,"%3d: %s\n",emitLoc,c);
+    if (TraceCode) fprintf(code,"L%-3d: %s\n",emitLoc,c);
     ++emitLoc ;
 }
 
