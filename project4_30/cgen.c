@@ -221,78 +221,51 @@ static void genExp( TreeNode * tree)
 #endif
             p1 = tree->child[0];
             p2 = tree->child[1];
+
+                  cGen(p2);
+                  cGen(p1);
+                  p1->visited=TRUE;
+                  p2->visited=TRUE;
+                  emitPop("$t1");
+                  emitPop("$t0");
            switch (tree->attr.op) {
                 case PLUS:
-            emitComment(">>ExpK OpK Plus");
-                  cGen(p2);
-                  cGen(p1);
-                  p1->visited=TRUE;
-                  p2->visited=TRUE;
-
-                  emitPop("$t1");
-                  emitPop("$t0");
                   emitCode("add $t2, $t0, $t1 ");
-                  emitPush("$t2");
-            emitComment("<<ExpK OpK Plus");
                 break;
                 case MINUS:
-            emitComment(">>ExpK OpK Minus");
-                  cGen(p2);
-                  cGen(p1);
-                  p1->visited=TRUE;
-                  p2->visited=TRUE;
-
-                  emitPop("$t1");
-                  emitPop("$t0");
                   emitCode("sub $t2, $t0, $t1 ");
-                  emitPush("$t2");
-            emitComment("<<ExpK OpK Minus");
                 break;
                 case TIMES:
-                emitComment(">>ExpK OpK Times");
-                  cGen(p2);
-                  cGen(p1);
-                  p1->visited=TRUE;
-                  p2->visited=TRUE;
-
-                  emitPop("$t1");
-                  emitPop("$t0");
                   emitCode("mul $t2, $t0, $t1 ");
-                  emitPush("$t2");
-                  emitComment("<<ExpK OpK Times");
-
                 break;
                 case OVER:
-                  emitComment(">>ExpK OpK Over");
-                  cGen(p2);
-                  cGen(p1);
-                  p1->visited=TRUE;
-                  p2->visited=TRUE;
-
-                  emitPop("$t1");
-                  emitPop("$t0");
                   emitCode("div $t2, $t0, $t1 ");
-                  emitPush("$t2");
-                  emitComment("<<ExpK OpK Over");
                 break;
                 case LT:
+                  emitCode("slt $t2, $t0, $t1 ");
                 break;
                 case LTEQ:
+                  emitCode("sle $t2, $t0, $t1 ");
                 break;
                 case GT:
+                  emitCode("sgt $t2, $t0, $t1 ");
                 break;
                 case GTEQ:
+                  emitCode("sge $t2, $t0, $t1 ");
                 break;
                 case EQ:
+                  emitCode("seq $t2, $t0, $t1 ");
                 break;
                 case NEQ:
+                  emitCode("sne $t2, $t0, $t1 ");
                 break;
 
                 default:
                     emitComment("BUG: Unknown operator");
                     break;
-              tree->visited = TRUE;
             } /* case op */
+            emitPush("$t2");
+            tree->visited = TRUE;
             break; /* OpK */
         case CallK:
 #if DEBUG
