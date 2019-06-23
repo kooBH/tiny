@@ -19,6 +19,13 @@ void emitLabel(char* c);
 /* emitJal*/
 void emitJal(char* c);
 
+/* emitLi */
+void emitLi(char*Rdest, int v);
+
+void emitLw(char* Rdest, int offset);
+void emitSw(char* Rsrc, int offset);
+void emitLa(char* Rdest, int offset);
+void emitMove(char*Rdest, char*Rsrc);
 
 /* Label for jump */
 void emitJumpLabel(int);

@@ -31,9 +31,6 @@ static void genDecl( TreeNode * tree)
     TreeNode * p1, * p2, * p3;
     int savedLoc1,savedLoc2,currentLoc;
     int offset;
-#if DEBUG
-    printf("genDecl\n");
-#endif
     switch(tree->kind.decl)
     {
         case FuncK:
@@ -100,9 +97,6 @@ static void genStmt( TreeNode * tree)
     int savedLoc1,savedLoc2,currentLoc;
     int loc;
 
-#if DEBUG
-    printf("genStmt\n");
-#endif
     switch (tree->kind.stmt)
     {
         case IfK:
@@ -117,7 +111,7 @@ static void genStmt( TreeNode * tree)
             emitComment("IfK if");
             cGen(p1);
             //savedLoc1 = emitSkip(1) ;
-            emitPop("t0");
+            emitPop("$t0");
             emitIfFalse(jumpCnt);
             savedLoc1 = jumpCnt;
             jumpCnt++;
@@ -162,7 +156,7 @@ static void genStmt( TreeNode * tree)
             jumpCnt++;
             /* While(p1) */
             cGen(p1);
-            emitPop("t0");
+            emitPop("$t0");
             emitIfTrue(jumpCnt);
             savedLoc2 = jumpCnt;
             jumpCnt++;
@@ -173,7 +167,7 @@ static void genStmt( TreeNode * tree)
             emitJumpLabel(savedLoc2);
             break;
         case RetK:
-            emitPop("v0");
+            emitPop("$v0");
             emitComment("RetK");
             break;
         default:
@@ -198,35 +192,107 @@ static void genExp( TreeNode * tree)
     switch (tree->kind.exp)
     {
         case ConstK :
+          if(tree->visited)break;
 #if DEBUG
-            printf("genExp ConstK\n");
+            printf("ExpK ConstK\n");
 #endif
-            if (TraceCode) emitComment("-> Const") ;
-            /* gen code to load integer constant using LDC */
-            if (TraceCode)  emitComment("<- Const") ;
+            emitComment(">>ExpK CosntK");
+            emitLi("$t0",tree->attr.val);
+            emitPush("$t0");
+            emitComment("<<ExpK CosntK");
             break; /* ConstK */
 
         case IdK :
+          if(tree->visited)break;
 #if DEBUG
-            printf("genExp IdK\n");
+            printf("ExpK IdK | location %d\n",tree->location);
 #endif
-            if (TraceCode) emitComment("-> Id") ;
-            if (TraceCode)  emitComment("<- Id") ;
+            emitComment(">>ExpK IdK");
+            emitLw("$t0",tree->location);
+            emitPush("$t0");
+            
+            emitComment("<<ExpK IdK");
             break; /* IdK */
 
         case OpK :
+            if(tree->visited)break;
 #if DEBUG
-              printf("genExp OpK\n");
+              printf("ExpK OpK\n");
 #endif
-            if (TraceCode) emitComment("-> Op") ;
             p1 = tree->child[0];
             p2 = tree->child[1];
            switch (tree->attr.op) {
+                case PLUS:
+            emitComment(">>ExpK OpK Plus");
+                  cGen(p2);
+                  cGen(p1);
+                  p1->visited=TRUE;
+                  p2->visited=TRUE;
+
+                  emitPop("$t1");
+                  emitPop("$t0");
+                  emitCode("add $t2, $t0, $t1 ");
+                  emitPush("$t2");
+            emitComment("<<ExpK OpK Plus");
+                break;
+                case MINUS:
+            emitComment(">>ExpK OpK Minus");
+                  cGen(p2);
+                  cGen(p1);
+                  p1->visited=TRUE;
+                  p2->visited=TRUE;
+
+                  emitPop("$t1");
+                  emitPop("$t0");
+                  emitCode("sub $t2, $t0, $t1 ");
+                  emitPush("$t2");
+            emitComment("<<ExpK OpK Minus");
+                break;
+                case TIMES:
+                emitComment(">>ExpK OpK Times");
+                  cGen(p2);
+                  cGen(p1);
+                  p1->visited=TRUE;
+                  p2->visited=TRUE;
+
+                  emitPop("$t1");
+                  emitPop("$t0");
+                  emitCode("mul $t2, $t0, $t1 ");
+                  emitPush("$t2");
+                  emitComment("<<ExpK OpK Times");
+
+                break;
+                case OVER:
+                  emitComment(">>ExpK OpK Over");
+                  cGen(p2);
+                  cGen(p1);
+                  p1->visited=TRUE;
+                  p2->visited=TRUE;
+
+                  emitPop("$t1");
+                  emitPop("$t0");
+                  emitCode("div $t2, $t0, $t1 ");
+                  emitPush("$t2");
+                  emitComment("<<ExpK OpK Over");
+                break;
+                case LT:
+                break;
+                case LTEQ:
+                break;
+                case GT:
+                break;
+                case GTEQ:
+                break;
+                case EQ:
+                break;
+                case NEQ:
+                break;
+
                 default:
                     emitComment("BUG: Unknown operator");
                     break;
+              tree->visited = TRUE;
             } /* case op */
-            if (TraceCode)  emitComment("<- Op") ;
             break; /* OpK */
         case CallK:
 #if DEBUG
@@ -236,15 +302,24 @@ static void genExp( TreeNode * tree)
             break;   
 
         case AssignK:
-            if (TraceCode) emitComment("-> assign") ;
-            /* generate code for rhs */
 #if DEBUG
-            printf("CompK %s\n",tree->attr.name);
+            printf("ExpK AssignK \n");
 #endif
-            if (TraceCode)  emitComment("<- assign") ;
+            emitComment(">>ExpK AssignK");
+            p1 = tree->child[0];
+            p2 = tree->child[1];
+            cGen(p2);
+            p1->visited = TRUE;
+            p2->visited = TRUE;
+
+            emitPop("$t1");
+            emitSw("$t1",p1->location);
+
+            emitComment("<<ExpK AssignK");
             break; /* assign_k */
 
         default:
+          printf("Default\n");
             break;
     }
 } /* genExp */
@@ -300,6 +375,7 @@ static void cGen( TreeNode * tree)
                 case StmtK:
                     switch(tree->kind.stmt){
                         case CompK:
+                          if(tree->visited)break;
                            offset = 0;
                             // Compound 끝에 stack관리
                             //emitCode("move $sp,$s0");
@@ -317,12 +393,11 @@ static void cGen( TreeNode * tree)
                               temp =temp->sibling;
 #if DEBUG 
                               printf("stack offset %d\n",offset);
-
 #endif
                             }
-
                             emitComment("end of CompK : stack manage");
                             emitStackPop(offset);
+                            tree->visited=TRUE;
                             break;
                         default:
                             break;

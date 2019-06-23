@@ -18,6 +18,29 @@ static int emitLoc = 0 ;
 static int highEmitLoc = 0;
 
 
+void emitLa(char* Rdest, int loc){
+    fprintf(code,"L%-3d: la %s, %d($fp)\n",emitLoc,Rdest,loc);
+    emitLoc++;
+}
+void emitMove(char*Rdest, char*Rsrc){
+    fprintf(code,"L%-3d: move %s, %s\n",emitLoc,Rdest,Rsrc);
+    emitLoc++;
+}
+
+void emitLi(char*Rdest,int v){
+    if (TraceCode) fprintf(code,"L%-3d: li      %s, %-3d\n",emitLoc,Rdest,v);
+    emitLoc++;
+}
+
+void emitLw(char* Rdest, int offset){
+    if (TraceCode) fprintf(code,"L%-3d: lw      %s, %3d($fp)\n",emitLoc,Rdest,offset);
+    emitLoc++;
+}
+void emitSw(char* Rsrc, int offset){
+    if (TraceCode) fprintf(code,"L%-3d: sw      %s, %3d($fp)\n",emitLoc,Rsrc,offset);
+    emitLoc++;
+}
+
 void emitJump2JumpLabel(int c){
     if (TraceCode) fprintf(code,"L%-3d: j J%-3d\n",emitLoc,c);
     emitLoc++;
@@ -43,7 +66,7 @@ void emitStackPop(int offset){
     emitLoc++;
 }
 void emitStackPush(int offset){
-    if (TraceCode) fprintf(code,"L%-3d: sub $sp, $sp, %d\n",emitLoc,offset);
+    if (TraceCode) fprintf(code,"L%-3d: addi $sp, $sp, -%d\n",emitLoc,offset);
     emitLoc++;
 }
 
@@ -76,26 +99,29 @@ void emitJAL(char* label)
     strcpy( c, "jal     " );
     strcat( c, label );
     emitCode( c );
+    free(c);
 }
 
 void emitPush(char* reg)
 {
     char* c = (char *)malloc(strlen(reg) + 17);
     emitCode("sub     $sp, $sp, 4");
-    strcpy( c, "sw      " );
-    strcpy( c, reg );
-    strcpy( c, "0($sp)" );
+    strcat( c, "sw      " );
+    strcat( c, reg );
+    strcat( c, ", 0($sp)" );
     emitCode( c );
+    free(c);
 }
 
 void emitPop(char* reg)
 {
     char* c = (char *)malloc(strlen(reg) + 17);
-    strcpy( c, "lw      " );
-    strcpy( c, reg );
-    strcpy( c, "0($sp)" );
+    strcat( c, "lw      " );
+    strcat( c, reg );
+    strcat( c, ", 0($sp)" );
     emitCode( c );
     emitCode("addi    $sp, $sp, 4");
+    free(c);
 }
 
 void emitFuncStart()
@@ -121,6 +147,7 @@ void emitFuncEnd()
     emitCode("lw      $fp, 4($sp)");
     emitCode("addi    $sp, $sp, 4");
     emitCode("jr      $ra");
+    
 #if DEBUG
     emitComment("End of FuncK");
 #endif
