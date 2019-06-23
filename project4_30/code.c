@@ -101,7 +101,7 @@ void emitPop(char* reg)
     free(c);
 }
 
-void emitFuncStart()
+void emitFuncStart(TreeNode* tree)
 {
     if (TraceCode) emitComment("Start of FuncK");
 
@@ -115,7 +115,7 @@ void emitFuncStart()
     if (TraceCode) emitComment("FuncK body start here");
 }
 
-void emitFuncEnd()
+void emitFuncEnd(TreeNode* tree)
 {
     if (TraceCode) emitComment("FuncK body end here");
 
@@ -129,7 +129,7 @@ void emitFuncEnd()
     if (TraceCode) emitComment("End of FuncK");
 }
 
-void emitCall(char* label)
+void emitCall(TreeNode* tree)
 {
     emitJAL(label);
     emitString("\n");
@@ -187,3 +187,4 @@ void emitStartup()
     emitCode("jr      $ra");
     emitString("\n");
 }
+

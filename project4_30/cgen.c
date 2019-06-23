@@ -320,7 +320,7 @@ static void cGen( TreeNode * tree)
                         case FuncK:
                             // Function 끝에 return
                             if(tree->child[i]->nodekind == StmtK){
-                                emitFuncEnd();
+                                emitFuncEnd( tree );
                             }
                             break;
                         default:
