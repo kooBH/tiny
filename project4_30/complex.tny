@@ -1,3 +1,4 @@
+/*
 int f(int a, int b[])
 {
     int c;
@@ -5,6 +6,7 @@ int f(int a, int b[])
     c = a;
     return b[a+c];
 }
+*/
 
 void main(void)
 {
@@ -17,5 +19,5 @@ void main(void)
         i = i + 1;
     }
 
-    output(f(1,d));
+    output(d[1]);
 }

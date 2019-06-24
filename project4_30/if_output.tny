@@ -3,6 +3,9 @@ void main(void)
     int a;
     a = 2;
     output(a);
-    a = 3;
+    if( a > 4 )
+    {
+        a = 3;
+    }
     output(a);
 }

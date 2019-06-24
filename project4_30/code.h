@@ -23,7 +23,9 @@ void emitJal(char* c);
 void emitLi(char*Rdest, int v);
 
 void emitLw(char* Rdest, int offset);
+void emitLwAddr(char* Rdest, char* Rsrc, int offset);
 void emitSw(char* Rsrc, int offset);
+void emitSwAddr(char* Rsrc, char* Rdest, int offset);
 void emitLa(char* Rdest, int offset);
 void emitMove(char*Rdest, char*Rsrc);
 
