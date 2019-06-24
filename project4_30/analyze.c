@@ -277,7 +277,9 @@ static void insertNode( TreeNode* t )
                         if ( strcmp( t->attr.name, "input" ) == 0 ||
                              strcmp( t->attr.name, "output" ) == 0 )
                         {
+#if DEBUG
                             printf( "input or output called\n" );
+#endif
                         }
                         else
                             error_undecl( t, t->lineno );

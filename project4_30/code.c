@@ -9,63 +9,118 @@
 #include "globals.h"
 #include "code.h"
 
-/* TM location number for current instruction emission */
+/* SPIM label number for current instruction emission */
 static int emitLoc = 0 ;
 
-/* Highest TM location emitted so far
-   For use in conjunction with emitSkip,
-   emitBackup, and emitRestore */
-static int highEmitLoc = 0;
-
-
-void emitLa(char* Rdest, int loc){
-    fprintf(code,"L%-3d: la %s, %d($fp)\n",emitLoc,Rdest,loc);
-    emitLoc++;
-}
-void emitMove(char*Rdest, char*Rsrc){
-    fprintf(code,"L%-3d: move %s, %s\n",emitLoc,Rdest,Rsrc);
+void emitLa(char* Rdest, int loc)
+{
+    if (TraceCode)
+        fprintf(code,"L%-3d: la      %s, %d($fp)\n",emitLoc,Rdest,loc);
+    else
+        fprintf(code,"    la      %s, %d($fp)\n",Rdest,loc);
     emitLoc++;
 }
 
-void emitLi(char*Rdest,int v){
-    if (TraceCode) fprintf(code,"L%-3d: li      %s, %-3d\n",emitLoc,Rdest,v);
+void emitMove(char*Rdest, char*Rsrc)
+{
+    if (TraceCode)
+        fprintf(code,"L%-3d: move    %s, %s\n",emitLoc,Rdest,Rsrc);
+    else
+        fprintf(code,"    move    %s, %s\n",Rdest,Rsrc);
     emitLoc++;
 }
 
-void emitLw(char* Rdest, int offset){
-    if (TraceCode) fprintf(code,"L%-3d: lw      %s, %3d($fp)\n",emitLoc,Rdest,offset);
-    emitLoc++;
-}
-void emitSw(char* Rsrc, int offset){
-    if (TraceCode) fprintf(code,"L%-3d: sw      %s, %3d($fp)\n",emitLoc,Rsrc,offset);
-    emitLoc++;
-}
-
-void emitJump2JumpLabel(int c){
-    if (TraceCode) fprintf(code,"L%-3d: j J%-3d\n",emitLoc,c);
+void emitLi(char*Rdest,int v)
+{
+    if (TraceCode)
+        fprintf(code,"L%-3d: li      %s, %-3d\n",emitLoc,Rdest,v);
+    else
+        fprintf(code,"    li      %s, %-3d\n",Rdest,v);
     emitLoc++;
 }
 
-void emitJumpLabel(int c){
-    if (TraceCode) fprintf(code,"J%-3d: \n",c);
-}
-
-void emitIfFalse(int c){
-    if (TraceCode) fprintf(code,"L%-3d: beqz $t0, J%-3d\n",emitLoc,c);
+void emitLw(char* Rdest, int offset)
+{
+    if (TraceCode)
+        fprintf(code,"L%-3d: lw      %s, %3d($fp)\n",emitLoc,Rdest,offset);
+    else
+        fprintf(code,"    lw      %s, %3d($fp)\n",Rdest,offset);
     emitLoc++;
 }
 
-void emitIfTrue(int c){
-    if (TraceCode) fprintf(code,"L%-3d: bnez $t0, J%-3d\n",emitLoc,c);
+void emitLwAddr(char* Rdest, char* Rsrc, int offset)
+{
+    if (TraceCode)
+        fprintf(code,"L%-3d: lw      %s, %3d(%s)\n",emitLoc,Rdest,offset,Rsrc);
+    else
+        fprintf(code,"    lw      %s, %3d(%s)\n",Rdest,offset,Rsrc);
     emitLoc++;
 }
 
-void emitStackPop(int offset){
-    if (TraceCode) fprintf(code,"L%-3d: addi $sp, $sp, %d\n",emitLoc,offset);
+void emitSw(char* Rsrc, int offset)
+{
+    if (TraceCode)
+        fprintf(code,"L%-3d: sw      %s, %3d($fp)\n",emitLoc,Rsrc,offset);
+    else
+        fprintf(code,"    sw      %s, %3d($fp)\n",Rsrc,offset);
     emitLoc++;
 }
-void emitStackPush(int offset){
-    if (TraceCode) fprintf(code,"L%-3d: addi $sp, $sp, -%d\n",emitLoc,offset);
+
+void emitSwAddr(char* Rsrc, char* Rdest, int offset)
+{
+    if (TraceCode)
+        fprintf(code,"L%-3d: sw      %s, %3d(%s)\n",emitLoc,Rsrc,offset,Rdest);
+    else
+        fprintf(code,"    sw      %s, %3d(%s)\n",Rsrc,offset,Rdest);
+    emitLoc++;
+}
+
+void emitJump2JumpLabel(int c)
+{
+    if (TraceCode)
+        fprintf(code,"L%-3d: j       J%d\n",emitLoc,c);
+    else
+        fprintf(code,"    j        J%d\n",c);
+    emitLoc++;
+}
+
+void emitJumpLabel(int c)
+{
+    fprintf(code,"J%d:\n",c);
+}
+
+void emitIfFalse(int c)
+{
+    if (TraceCode)
+        fprintf(code,"L%-3d: beqz    $t0, J%d\n",emitLoc,c);
+    else
+        fprintf(code,"    beqz    $t0, J%d\n",c);
+    emitLoc++;
+}
+
+void emitIfTrue(int c)
+{
+    if (TraceCode)
+        fprintf(code,"L%-3d: bnez    $t0, J%d\n",emitLoc,c);
+    else
+        fprintf(code,"    bnez    $t0, J%d\n",c);
+    emitLoc++;
+}
+
+void emitStackPop(int offset)
+{
+    if (TraceCode)
+        fprintf(code,"L%-3d: addi    $sp, $sp, %d\n",emitLoc,offset);
+    else
+        fprintf(code,"    addi    $sp, $sp, %d\n",offset);
+    emitLoc++;
+}
+void emitStackPush(int offset)
+{
+    if (TraceCode)
+        fprintf(code,"L%-3d: addi    $sp, $sp, -%d\n",emitLoc,offset);
+    else
+        fprintf(code,"    addi    $sp, $sp, -%d\n",offset);
     emitLoc++;
 }
 
@@ -76,8 +131,10 @@ void emitString(char* c)
 
 void emitJal(char*c)
 {
-    if (TraceCode) fprintf(code,"%3d: jal %s\n",emitLoc,c);
-    else fprintf(code,"    jal %s\n",c);
+    if (TraceCode)
+        fprintf(code,"%3d: jal     %s\n",emitLoc,c);
+    else
+        fprintf(code,"    jal     %s\n",c);
     emitLoc++;
 }
 
@@ -89,8 +146,10 @@ void emitLabel(char* c)
 /* just write some codes*/
 void emitCode(char* c)
 {
-    if ( TraceCode ) fprintf(code,"L%-3d: %s\n",emitLoc,c);
-    else fprintf(code,"    %s\n",c);
+    if ( TraceCode )
+        fprintf(code,"L%-3d: %s\n",emitLoc,c);
+    else
+        fprintf(code,"    %s\n",c);
     ++emitLoc ;
 }
 
@@ -127,39 +186,29 @@ void emitPop(char* reg)
 
 void emitFuncStart(TreeNode* tree)
 {
-    if (TraceCode) emitComment("Start of FuncK");
-
-    emitString("\n");
+    emitComment("Start of FuncK");
+    emitComment("Build Activation Recode");
     emitCode("sub     $sp, $sp, 8");
     emitCode("sw      $fp, 4($sp)");
     emitCode("sw      $ra, 0($sp)");
     emitCode("add     $fp, $sp, 4");
-    emitString("\n");
-
-    if (TraceCode) emitComment("FuncK body start here");
+    emitComment("FuncK body start here");
 }
 
 void emitFuncEnd(TreeNode* tree)
 {
-    if (TraceCode) emitComment("FuncK body end here");
-
-    emitString("\n");
+    emitComment("FuncK body end here");
+    emitComment("Destruct Activation Recode");
     emitCode("lw      $ra, 0($sp)");
     emitCode("lw      $fp, 8($sp)");
     emitCode("sub     $sp, $sp, 8");
     emitCode("jr      $ra");
-    
-#if DEBUG
     emitComment("End of FuncK");
-#endif
-    emitString("\n");
 }
 
 void emitCall(char* label)
 {
     emitJAL(label);
-    emitString("\n");
-    emitComment("Function return here");
 }
 
 /* Procedure emitComment prints a comment line 
@@ -194,9 +243,9 @@ void emitStartup()
     emitString("\n");
 
     /* add next line*/
-     emitCode("li $v0, 4");
-     emitCode("la $a0, nextline");
-     emitCode("syscall");
+    emitCode("li $v0, 4");
+    emitCode("la $a0, nextline");
+    emitCode("syscall");
 
     emitCode("lw      $ra, 0($sp)");
     emitCode("lw      $fp, 4($sp)");
