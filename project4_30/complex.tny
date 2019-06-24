@@ -1,23 +1,21 @@
-/*
-int f(int a, int b[])
+int f(int a, int b)
 {
     int c;
-
-    c = a;
-    return b[a+c];
+    c = a + b;
+    return c;
 }
-*/
 
 void main(void)
 {
-    int d[10];
+    /* int d[10]; */
     int i;
-
-    while( i < 10 )
+    i = 3;
+    /*while( i < 10 )
     {
-        d[i] = i;
+        d[i] = f(i,1);
+        output(d[i]);
         i = i + 1;
-    }
-
-    output(d[1]);
+    }*/
+    output(f(i,5));
+    i = 7;
 }
