@@ -150,7 +150,10 @@ static void genStmt( TreeNode * tree)
             // cGen(p2);
             break;
         case IterK:
+            emitComment(">>IterK");
+            // Exp
             p1 = tree->child[0] ;
+            // Stmt
             p2 = tree->child[1] ;
 
             emitJumpLabel(jumpCnt);
@@ -159,7 +162,7 @@ static void genStmt( TreeNode * tree)
             /* While(p1) */
             cGen(p1);
             emitPop("$t0");
-            emitIfTrue(jumpCnt);
+            emitIfFalse(jumpCnt);
             savedLoc2 = jumpCnt;
             jumpCnt++;
 
@@ -167,6 +170,7 @@ static void genStmt( TreeNode * tree)
             cGen(p2);
             emitJump2JumpLabel(savedLoc1);
             emitJumpLabel(savedLoc2);
+            emitComment("<<IterK");
             break;
         case RetK:
             emitPop("$v0");
