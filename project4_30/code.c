@@ -200,8 +200,8 @@ void emitFuncEnd(TreeNode* tree)
     emitComment("FuncK body end here");
     emitComment("Destruct Activation Recode");
     emitCode("lw      $ra, 0($sp)");
-    emitCode("lw      $fp, 8($sp)");
-    emitCode("sub     $sp, $sp, 8");
+    emitCode("lw      $fp, 4($sp)");
+    emitCode("add     $sp, $sp, 8");
     emitCode("jr      $ra");
     emitComment("End of FuncK");
 }
@@ -237,14 +237,16 @@ void emitStartup()
     emitCode("sw      $fp, 4($sp)");
     emitCode("sw      $ra, 0($sp)");
     emitCode("add     $fp, $sp, 4");
+
     emitString("\n");
     emitCode("li      $v0, 1");
+    emitCode("lw      $a0, 4($fp)");
     emitCode("syscall");
     emitString("\n");
 
     /* add next line*/
-    emitCode("li $v0, 4");
-    emitCode("la $a0, nextline");
+    emitCode("li      $v0, 4");
+    emitCode("la      $a0, nextline");
     emitCode("syscall");
 
     emitCode("lw      $ra, 0($sp)");

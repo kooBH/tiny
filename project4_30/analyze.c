@@ -686,14 +686,17 @@ fprintf(listing,"%s = %d\n",
                     if( strcmp( t->attr.name, "output" ) == 0 )
                     {
                         t_1 = t->child[0];          // call parameter
+                        t->type = VOID;
                     }
                     else if( strcmp( t->attr.name, "input" ) == 0 )
                     {
                         t_1 = t->child[0];          // call parameter
+                        t->type = INT;
                     }
                     else
                     {
                         l_1 = st_lookup_buck( t->attr.name );
+                        t->type = l_1->node->type;
                         if ( l_1->node->nodekind != DeclK ||
                              l_1->node->kind.decl != FuncK ) // call value
                             printf( "ERROR in line %d : cannot call value\n",
