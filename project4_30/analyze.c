@@ -305,6 +305,7 @@ static void insertNode( TreeNode* t )
                         {
                             location_global += 4;
                             t->location = location_global;
+                            t->isglobals = TRUE;
                             st_insert_local( t->attr.name, t->lineno,
                                              location_global, t );
                         }
@@ -332,6 +333,7 @@ static void insertNode( TreeNode* t )
                         {
                             location_global += 4 * t->attr.arr.size;
                             t->location = location_global;
+                            t->isglobals = TRUE;
                             st_insert_local( t->attr.arr.name, t->lineno,
                                              location_global, t );
                         }
@@ -662,12 +664,15 @@ fprintf(listing,"%s = %d\n",
                     {
                         t->attr.arr.size = l_2->node->attr.arr.size;
                     }
+                    t->isglobals = l2->node->isglobals;
                     // fprintf(listing,
                     //"ERROR in line %d : index is not integer.\n",t->lineno
                     // );
                     break;
                 case ArrIdK:
                     /* 변수가 array인 경우 array index가 int가 아닌 경우 */
+                    l_2 = st_lookup_buck( t->attr.name );
+                    t->isglobals = l2->node->isglobals;
                     if ( t->child[0]->nodekind == ExpK &&
                          ( t->child[0]->kind.exp == IdK ||
                            t->child[0]->kind.exp == ArrIdK ) )
