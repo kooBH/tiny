@@ -108,6 +108,7 @@ typedef struct treeNode
     /* 주소 */
     int location;
     int visited;
+    int isglobals;
 } TreeNode;
 
 /**************************************************/

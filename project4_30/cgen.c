@@ -243,7 +243,10 @@ static void genExp( TreeNode * tree)
             if( p1->kind.exp == IdK )
             {
                 emitPop("$t1");
-                emitSw("$t1",p1->location);
+                if(p1->isglobals)
+                    emitSwAddr("$t1","$gp",p1->location);
+                else
+                    emitSw("$t1",p1->location);
 
             }
             else if( p1->kind.exp == ArrIdK )
@@ -252,14 +255,17 @@ static void genExp( TreeNode * tree)
                 emitPop("$t2"); // arr[offset] -> offset
                 emitCode("add     $t2, $t2, $t2");
                 emitCode("add     $t2, $t2, $t2"); // offset*4
-                emitCode("add     $t3, $fp, $t2"); 
+                if(p1->isglobals)
+                    emitCode("add     $t3, $gp, $t2"); 
+                else
+                    emitCode("add     $t3, $fp, $t2"); 
                 emitPop("$t1");
                 emitSwAddr("$t1","$t3",p1->location);
             }
             else
             {
                 emitPop("$t1");
-                printf("Assign to non-Id");
+                emitComment("Assign to non-Id");
             }
 
             // emitPush("$t1");
@@ -347,7 +353,10 @@ static void genExp( TreeNode * tree)
             {
                 for(i = tree->attr.arr.size-1; i >= 0 ; i--)
                 {
-                    emitLw("$t0",tree->location+4*i);
+                    if(tree->isglobals)
+                        emitLwAddr("$t0","$gp",tree->location+4*i);
+                    else
+                        emitLw("$t0",tree->location+4*i);
                     emitPush("$t0");
                 }
             }
@@ -355,7 +364,10 @@ static void genExp( TreeNode * tree)
             {
                 emitComment(">>ExpK IdK");
 
-                emitLw("$t0",tree->location);
+                if(tree->isglobals)
+                    emitLwAddr("$t0","$gp",tree->location);
+                else
+                    emitLw("$t0",tree->location);
                 emitPush("$t0");
 
                 emitComment("<<ExpK IdK");
@@ -375,7 +387,10 @@ static void genExp( TreeNode * tree)
             emitPop("$t1"); // arr[offset] -> offset
             emitCode("add     $t1, $t1, $t1");
             emitCode("add     $t1, $t1, $t1"); // offset*4
-            emitCode("add     $t2, $fp, $t1"); 
+            if(tree->isglobals)
+                emitCode("add     $t2, $gp, $t1"); 
+            else
+                emitCode("add     $t2, $fp, $t1"); 
             emitLwAddr("$t0","$t2",tree->location);
             emitPush("$t0");
 

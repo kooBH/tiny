@@ -1,3 +1,5 @@
+int i;
 void main(void){
-  output(1);
+    i = 1;
+    output(i);
 }

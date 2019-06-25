@@ -116,6 +116,7 @@ TreeNode* newStmtNode( StmtKind kind )
         t->kind.stmt = kind;
         t->lineno = lineno;
         t->visited = FALSE;
+        t->isglobals = FALSE;
     }
     return t;
 }
@@ -138,6 +139,7 @@ TreeNode* newExpNode( ExpKind kind )
         t->kind.exp = kind;
         t->lineno = lineno;
         t->visited = FALSE;
+        t->isglobals = FALSE;
         if ( kind == ConstK )
             t->type = INT;
         else
@@ -165,6 +167,7 @@ TreeNode* newDeclNode( DeclKind kind )
         t->kind.decl = kind;
         t->lineno = lineno;
         t->visited = FALSE;
+        t->isglobals = FALSE;
     }
     return t;
 }
@@ -187,6 +190,7 @@ TreeNode* newParamNode( ParamKind kind )
         t->kind.param = kind;
         t->lineno = lineno;
         t->visited = FALSE;
+        t->isglobals = FALSE;
     }
     return t;
 }
@@ -209,6 +213,7 @@ TreeNode* newTypeNode( TypeKind kind )
         t->kind.type = kind;
         t->lineno = lineno;
         t->visited = FALSE;
+        t->isglobals = FALSE;
     }
     return t;
 }
