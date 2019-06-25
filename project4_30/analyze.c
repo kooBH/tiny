@@ -657,6 +657,11 @@ fprintf(listing,"%s = %d\n",
                     t->type = INT;
                     break;
                 case IdK:
+                    l_2 = st_lookup_buck( t->attr.name );
+                    if( l_2 != NULL && l_2->node->kind.decl == ArrVarK ) // array parameter passing
+                    {
+                        t->attr.arr.size = l_2->node->attr.arr.size;
+                    }
                     // fprintf(listing,
                     //"ERROR in line %d : index is not integer.\n",t->lineno
                     // );

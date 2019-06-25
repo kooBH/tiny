@@ -243,6 +243,7 @@ static void genExp( TreeNode * tree)
             {
                 emitPop("$t1");
                 emitSw("$t1",p1->location);
+
             }
             else if( p1->kind.exp == ArrIdK )
             {
@@ -341,11 +342,24 @@ static void genExp( TreeNode * tree)
 #if DEBUG
             printf("ExpK IdK | location %d\n",tree->location);
 #endif
-            emitComment(">>ExpK IdK");
-            emitLw("$t0",tree->location);
-            emitPush("$t0");
+            if( tree->attr.arr.size > 0 ) // IdK -> ArrVarK
+            {
+                for(i = 0; i < tree->attr.arr.size; i++)
+                {
+                    emitLw("$t0",tree->location+4*i);
+                    emitPush("$t0");
+                }
+            }
+            else
+            {
+                emitComment(">>ExpK IdK");
 
-            emitComment("<<ExpK IdK");
+                emitLw("$t0",tree->location);
+                emitPush("$t0");
+
+                emitComment("<<ExpK IdK");
+            }
+
             tree->visited=TRUE;
             break; /* IdK */
 
@@ -375,17 +389,25 @@ static void genExp( TreeNode * tree)
 #endif
             i = 0;
             p1 = tree->child[0]; // argement
+
             emitComment(">>ExpK CallK");
+            emitComment(">>Param Eval");
+            cGen(p1);
+            emitComment("<<Param Eval");
             while( p1 != NULL )
             {
                 //param gen
-                emitComment(">>Param Eval");
-                cGen(p1);
-                emitComment("<<Param Eval");
                 //add $a0-3
                 // emitCode("move    $a0, $t0");
                 // sprintf(buff, "$a%d", i);
-                i = i + 1;
+                if( p1->nodekind == ExpK &&
+                    p1->kind.exp == IdK &&
+                    p1->attr.arr.size > 0 ) // IdK -> ArrVarK
+                {
+                    i = i + p1->attr.arr.size;
+                }
+                else
+                    i = i + 1;
                 // emitPop(buff);
                 p1 = p1->sibling;
             }
