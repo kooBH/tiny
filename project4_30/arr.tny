@@ -1,0 +1,20 @@
+int f(int a, int d[])
+{
+    return d[a];
+}
+
+void main(void)
+{
+    int d[10];
+    int i;
+
+    i = 0;
+    while( i < 10 )
+    {
+        d[i] = i+10;
+        i = i + 1;
+    }
+
+    i = 4;
+    output(f(i,d));
+}
