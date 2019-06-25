@@ -222,10 +222,11 @@ static void genExp( TreeNode * tree)
 #if DEBUG
     printf("genExp\n");
 #endif
-    int i;
+    int i,j;
     int loc;
     char buff[10];
     TreeNode *p1, *p2;
+    TreeNode *pparam[4];
     if( tree->visited == TRUE ) return;
     switch (tree->kind.exp)
     {
@@ -344,7 +345,7 @@ static void genExp( TreeNode * tree)
 #endif
             if( tree->attr.arr.size > 0 ) // IdK -> ArrVarK
             {
-                for(i = 0; i < tree->attr.arr.size; i++)
+                for(i = tree->attr.arr.size-1; i >= 0 ; i--)
                 {
                     emitLw("$t0",tree->location+4*i);
                     emitPush("$t0");
@@ -387,30 +388,44 @@ static void genExp( TreeNode * tree)
 #if DEBUG
             printf("ExpK CallK %s\n",tree->attr.name);
 #endif
-            i = 0;
             p1 = tree->child[0]; // argement
 
             emitComment(">>ExpK CallK");
             emitComment(">>Param Eval");
-            cGen(p1);
-            emitComment("<<Param Eval");
-            while( p1 != NULL )
+            for( i = 0; i < 4; i++ )
             {
-                //param gen
-                //add $a0-3
-                // emitCode("move    $a0, $t0");
-                // sprintf(buff, "$a%d", i);
-                if( p1->nodekind == ExpK &&
-                    p1->kind.exp == IdK &&
-                    p1->attr.arr.size > 0 ) // IdK -> ArrVarK
+                if( p1 != NULL )
                 {
-                    i = i + p1->attr.arr.size;
+                    pparam[i] = p1;
+                    p1 = p1->sibling;
                 }
                 else
-                    i = i + 1;
-                // emitPop(buff);
-                p1 = p1->sibling;
+                    pparam[i] = NULL;
             }
+            
+            i = 0;
+            for( j = 3; j >= 0; j-- )
+            {
+                if( pparam[j] != NULL )
+                {
+                    cGen(pparam[j]);
+                    //param gen
+                    //add $a0-3
+                    // emitCode("move    $a0, $t0");
+                    // sprintf(buff, "$a%d", i);
+                    if( pparam[j]->nodekind == ExpK &&
+                        pparam[j]->kind.exp == IdK &&
+                        pparam[j]->attr.arr.size > 0 ) // IdK -> ArrVarK
+                    {
+                        i = i + pparam[j]->attr.arr.size;
+                    }
+                    else
+                        i = i + 1;
+                    // emitPop(buff);
+                }
+            }
+            emitComment("<<Param Eval");
+
             emitCall(tree->attr.name);
             emitComment("<<ExpK CallK");
             // if( strcmp( tree->attr.name, "output" ) == 0 )

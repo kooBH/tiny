@@ -1,6 +1,6 @@
-int f(int a, int b[])
+int f(int a, int d[])
 {
-    return b[a];
+    return d[a];
 }
 
 void main(void)
@@ -11,10 +11,10 @@ void main(void)
     i = 0;
     while( i < 10 )
     {
-        d[i] = i;
+        d[i] = i+10;
         i = i + 1;
     }
 
-    i = 1;
+    i = 4;
     output(f(i,d));
 }
